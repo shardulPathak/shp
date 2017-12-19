@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_details"
+            android:title="@string/title_my_details" />
+        <item
+            android:id="@+id/nav_disease"
+            android:title="@string/title_view_disease" />
+        <item
+            android:id="@+id/nav_patient"
+            android:title="@string/title_view_patient" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/title_logout" />
+    </group>
+</menu>
