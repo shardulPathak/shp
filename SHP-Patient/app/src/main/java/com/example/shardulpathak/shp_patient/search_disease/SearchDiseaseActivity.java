@@ -1,6 +1,8 @@
 package com.example.shardulpathak.shp_patient.search_disease;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.example.shardulpathak.shp_patient.IBaseActivity;
 import com.example.shardulpathak.shp_patient.R;

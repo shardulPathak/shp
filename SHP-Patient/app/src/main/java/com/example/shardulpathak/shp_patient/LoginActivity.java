@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -62,6 +65,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
+
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private boolean exit;
 
     /**
@@ -80,7 +85,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        setTitle(R.string.app_name);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -188,6 +192,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
@@ -213,9 +222,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            //first check if the device is connected to a network
+            handleDeviceConnectivity();
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute();
+        }
+    }
+
+    private void handleDeviceConnectivity() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo == null) {
+            Log.d(TAG, "Network info object not initialized properly");
+        }
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            Log.d(TAG, "The device is not connected to any network.");
+            Toast.makeText(getApplicationContext(), "No Internet Connection. Please connect to the Internet", Toast.LENGTH_SHORT).show();
+        }
+        if (networkInfo != null && (networkInfo.getType() != ConnectivityManager.TYPE_WIFI || networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
+            Log.d(TAG, "The device is not connected to WiFi or Mobile data.");
         }
     }
 

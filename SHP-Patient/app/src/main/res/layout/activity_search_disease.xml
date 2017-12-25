@@ -6,5 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.shardulpathak.shp_patient.search_disease.SearchDiseaseActivity">
 
-    <include layout="@layout/fragment_search_disease"/>
+
+    <fragment
+        android:id="@+id/frag_search_disease"
+        android:name="com.example.shardulpathak.shp_patient.search_disease.SearchDiseaseFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>

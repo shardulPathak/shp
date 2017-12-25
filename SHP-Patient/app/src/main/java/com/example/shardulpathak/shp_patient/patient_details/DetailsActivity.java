@@ -65,10 +65,8 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     private void openSearchDiseaseActivity() {
-//        SearchDiseaseFragment searchDiseaseFragment=new SearchDiseaseFragment();
-//        openFragment(searchDiseaseFragment);
-        Intent searchDiseaseIntent=new Intent(this, SearchDiseaseActivity.class);
-        startActivity(searchDiseaseIntent);
+        SearchDiseaseFragment searchDiseaseFragment=new SearchDiseaseFragment();
+        openFragment(searchDiseaseFragment);
     }
 
     @Override
