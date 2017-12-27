@@ -1,7 +1,6 @@
 package com.example.shardulpathak.shp_patient.search_disease;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
 import com.example.shardulpathak.shp_patient.R;
-import com.example.shardulpathak.shp_patient.search_doctor.SearchDoctorFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +56,6 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
 
     private GetSymptomsTask mAuthTask = null;
 
-    private GetDiseaseAndDoctorTask mDiseaseListTask = null;
 
     List<String> mSymptomSpinnerList;
 
@@ -142,7 +139,7 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
                 Log.d(TAG, "Done button clicked");
                 Toast.makeText(getActivity(), "Done button clicked", Toast.LENGTH_SHORT).show();
                 //send all symptoms to api, get the disease and the doctors list
-                sendAllSymptomsAndGetData();
+                sendAllSymptomsToResultsFragment();
 
                 SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
                 openFragment(searchResultsFragment);
@@ -160,16 +157,8 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         fragmentTransaction.commit();
     }
 
-    private void sendAllSymptomsAndGetData() {
-        Log.d(TAG, "Inside sendAllSymptomsAndGetData()");
-        if (mAuthTask != null) {
-            Log.d(TAG, "Inside if, the Async task object is not null. Returning....");
-            return;
-        }
+    private void sendAllSymptomsToResultsFragment() {
 
-        Log.d(TAG, "Calling the Async task for fetching disease and doctor list.");
-        mDiseaseListTask = new GetDiseaseAndDoctorTask();
-        mDiseaseListTask.execute();
     }
 
     private void sendAndGetOtherValues() {
@@ -262,7 +251,7 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
                 for (int i = 0; i < dataArray.length(); i++) {
                     JSONObject symptomInfo = dataArray.getJSONObject(i);
                     localSymptoms.add(symptomInfo.getString("symtom_name"));
-                    Toast.makeText(getActivity(), "Other symptoms obtained are: " + localSymptoms, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), "Other symptoms obtained are: " + localSymptoms, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Other symptoms obtained are: " + localSymptoms);
                 }
                 mSymptomSpinnerList = localSymptoms;
@@ -281,142 +270,6 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
-
-    public class GetDiseaseAndDoctorTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            Log.d(TAG, "Inside doInBackground(" + params + ")");
-            try {
-
-                String getDiseaseAndDoctorListURL = "http://skillab.in/medical_beta/catalog/user/get_desease_by_all_symtoms_api";
-                URL url = new URL(getDiseaseAndDoctorListURL);
-                JSONObject postDataParams = new JSONObject();
-                postDataParams.put("symtoms", "'Joint Pain','cold'");
-//                postDataParams.put("password", mPassword);
-                Log.e("params", postDataParams.toString());
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setReadTimeout(15000);
-                connection.setConnectTimeout(15000);
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
-                Log.d(TAG, "All connection parameters setting done.");
-
-                OutputStream os = connection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(getPostDataString(postDataParams));
-                writer.flush();
-                writer.close();
-                os.close();
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-                    StringBuffer sb = new StringBuffer("");
-                    String line = "";
-                    while ((line = in.readLine()) != null) {
-                        sb.append(line);
-                        Log.d(TAG, line);
-                        break;
-                    }
-                    in.close();
-                    return sb.toString();
-                } else {
-                    return "false : " + responseCode;
-                }
-            } catch (IOException | JSONException e) {
-                return "Exception ::" + e.getMessage();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            Log.d(TAG, "Inside onPostExecute(" + result + ")");
-            super.onPostExecute(result);
-            mDiseaseListTask = null;
-
-            Log.d("result::", result);
-            if (result.contains("ok")) {
-                //replace with log
-                Toast.makeText(getActivity(), "Got other response", Toast.LENGTH_LONG).show();
-            } else {
-                if (result.isEmpty() || result.contains("error"))
-                    //replace with log
-                    Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
-            }
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                String status = jsonObject.getString("status");
-                String message = jsonObject.getString("message");
-                ArrayList<String> localSymptoms = new ArrayList<>();
-                JSONArray dataDiseaseArray = jsonObject.getJSONArray("data_deseases");
-
-                for (int i = 0; i < dataDiseaseArray.length(); i++) {
-                    JSONObject diseaseInfo = dataDiseaseArray.getJSONObject(i);
-                    String diseaseID = diseaseInfo.getString("disease_id");
-                    String diseaseName = diseaseInfo.getString("disease_name");
-                    String diseaseType = diseaseInfo.getString("type");
-
-                    Toast.makeText(getActivity(), "Disease details are: " + diseaseID + ", " + diseaseName + ", " + diseaseType + ".", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Disease details are: " + diseaseID + ", " + diseaseName + ", " + diseaseType + ".");
-
-                    JSONArray dataDoctorArray = jsonObject.getJSONArray("data_doctors");
-                    for (int j = 0; j < dataDoctorArray.length(); j++) {
-                        JSONObject doctorInfo = dataDoctorArray.getJSONObject(j);
-                        String doctorID = doctorInfo.getString("doctor_id");
-                        String doctorEmail = doctorInfo.getString("email");
-                        String docCategory = doctorInfo.getString("category");
-                        String docFullName = doctorInfo.getString("fullname");
-                        String docAddress = doctorInfo.getString("address");
-                        String docCity = doctorInfo.getString("city");
-                        String docMobile = doctorInfo.getString("mobile");
-                        String docHospitalName = doctorInfo.getString("hospital_name");
-
-                        Toast.makeText(getActivity(), "Doctor details are: " + doctorID + ", " + doctorEmail + ", " + docCategory + ", " +
-                                docFullName + ", " + docAddress + ", " + docCity + ", " + docMobile + ", " + docHospitalName, Toast.LENGTH_SHORT).show();
-
-                        Log.d(TAG, "Doctor details are: " + doctorID + ", " + doctorEmail + ", " + docCategory + ", " +
-                                docFullName + ", " + docAddress + ", " + docCity + ", " + docMobile + ", " + docHospitalName);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            mDiseaseListTask = null;
-        }
-    }
-
-    public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        Iterator<String> itr = params.keys();
-        while (itr.hasNext()) {
-            String key = itr.next();
-            Object value = params.get(key);
-            if (first) {
-                first = false;
-            } else {
-                result.append("&");
-            }
-            result.append(URLEncoder.encode(key, "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
-        }
-        return result.toString();
-    }
 
     private void handleFirstNextButtonClick() {
         mSelectedSymptomChipView.setVisibility(View.VISIBLE);
@@ -481,5 +334,25 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     @Override
     public void onClick(View v) {
 
+    }
+
+    public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        Iterator<String> itr = params.keys();
+        while (itr.hasNext()) {
+            String key = itr.next();
+            Object value = params.get(key);
+            if (first) {
+                first = false;
+            } else {
+                result.append("&");
+            }
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
+        return result.toString();
     }
 }
