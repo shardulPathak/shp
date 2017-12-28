@@ -72,4 +72,18 @@
     <string name="symptom_select_tv">Please select a symptom from the drop-down.</string>
     <string name="selected_symptoms_text_view">Symptoms you select will appear here</string>
     <string name="predicted_disease_tv">Predicted disease is:</string>
+    <string name="list_of_doctors_tv">List of doctors</string>
+    <string name="list_of_diseases_tv">List of diseases</string>
+    <string name="disease_cell_name_tv">Disease Name:</string>
+    <string name="disease_cell_type_tv">Disease Type:</string>
+    <string name="disease_cell_id_tv">Disease ID:</string>
+    <string name="doctor_cell_id_tv">Doctor ID:</string>
+    <string name="doc_cell_name_tv">Name:</string>
+    <string name="doc_cell_speciality_tv">Speciality:</string>
+    <string name="dec_cell_hospital_name_tv">Hospital Name:</string>
+    <string name="doc_cell_address_tv">Address:</string>
+    <string name="doc_cell_city_tv">City:</string>
+    <string name="doc_cell_mobile_number_tv">Mobile Number:</string>
+    <string name="doc_cell_email_id_tv">Email ID:</string>
+    <string name="book_appointment_btn_text">Book Appointment</string>
 </resources>

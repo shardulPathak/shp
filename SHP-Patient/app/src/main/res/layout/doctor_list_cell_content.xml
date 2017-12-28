@@ -1,72 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/doc_id_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doctor_cell_id_tv" />
 
     <TextView
         android:id="@+id/doctor_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_id" />
+        android:layout_toEndOf="@+id/doc_id_tv"
+        android:layout_toRightOf="@+id/doc_id_tv" />
+
 
     <TextView
-        android:id="@+id/doctor_email"
+        android:id="@+id/doc_full_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/doctor_id"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/doc_id_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_email" />
-
-    <TextView
-        android:id="@+id/doc_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/doctor_email"
-        android:layout_marginTop="5dp"
-        android:text="doctor_category" />
+        android:text="@string/doc_cell_name_tv" />
 
     <TextView
         android:id="@+id/doc_full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/doc_category"
+        android:layout_below="@id/doctor_id"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_full_name" />
+        android:layout_toEndOf="@+id/doc_full_name_tv"
+        android:layout_toRightOf="@+id/doc_full_name_tv" />
+
+    <TextView
+        android:id="@+id/doc_category_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/doc_full_name_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doc_cell_speciality_tv" />
+
+    <TextView
+        android:id="@+id/doc_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/doc_full_name"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@+id/doc_category_tv"
+        android:layout_toRightOf="@+id/doc_category_tv" />
+
+    <TextView
+        android:id="@+id/hospital_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/doc_category_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/dec_cell_hospital_name_tv" />
+
+    <TextView
+        android:id="@+id/doc_hospital_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/doc_category"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@+id/hospital_name_tv"
+        android:layout_toRightOf="@+id/hospital_name_tv" />
+
+    <TextView
+        android:id="@+id/doc_address_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/hospital_name_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doc_cell_address_tv" />
 
     <TextView
         android:id="@+id/doc_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/doc_full_name"
+        android:layout_below="@id/doc_hospital_name"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_address" />
+        android:layout_toEndOf="@+id/doc_address_tv"
+        android:layout_toRightOf="@+id/doc_address_tv" />
+
+    <TextView
+        android:id="@+id/doc_city_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/doc_address_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doc_cell_city_tv" />
 
     <TextView
         android:id="@+id/doc_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/doc_address"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_city" />
+        android:layout_toEndOf="@+id/doc_city_tv"
+        android:layout_toRightOf="@+id/doc_city_tv" />
+
+    <TextView
+        android:id="@+id/doc_number_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/doc_city_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doc_cell_mobile_number_tv" />
 
     <TextView
         android:id="@+id/doc_mobile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/doc_city"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_mobile" />
+        android:layout_toEndOf="@+id/doc_number_tv"
+        android:layout_toRightOf="@+id/doc_number_tv" />
+
 
     <TextView
-        android:id="@+id/doc_hospital_name"
+        android:id="@+id/doc_email_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/doc_number_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/doc_cell_email_id_tv" />
+
+
+    <TextView
+        android:id="@+id/doctor_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/doc_mobile"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:text="doctor_hospital_name" />
+        android:layout_toEndOf="@+id/doc_email_tv"
+        android:layout_toRightOf="@+id/doc_email_tv" />
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/book_appointment_btn"
+        android:text="@string/book_appointment_btn_text"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/doctor_email"
+        android:layout_marginTop="5dp"
+        android:textAllCaps="false"/>
 
 </RelativeLayout>

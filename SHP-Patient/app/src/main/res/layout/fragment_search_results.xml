@@ -19,7 +19,10 @@
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="List of diseases" />
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:text="@string/list_of_diseases_tv" />
 
         <ListView
             android:id="@+id/disease_list"
@@ -30,32 +33,25 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp" />
-
-
-        <TextView
-            android:id="@+id/result_seperator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/disease_list"
-            android:layout_marginEnd="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="---------------------------------------------------------------" />
+            android:divider="@color/colorBlack"
+            android:dividerHeight="1sp" />
+
 
         <TextView
             android:id="@+id/doctor_list_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/result_seperator"
+            android:layout_below="@id/disease_list"
             android:layout_marginEnd="5dp"
             android:layout_marginLeft="5dp"
+            android:textStyle="bold"
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:text="List of doctors" />
+            android:layout_marginTop="20dp"
+            android:textSize="15sp"
+            android:text="@string/list_of_doctors_tv"
+            android:layout_centerHorizontal="true"/>
 
         <ListView
             android:id="@+id/doctor_list"
@@ -66,7 +62,10 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            android:divider="@color/colorBlack"
+            android:dividerHeight="1sp"
+/>
     </RelativeLayout>
 
 </FrameLayout>
