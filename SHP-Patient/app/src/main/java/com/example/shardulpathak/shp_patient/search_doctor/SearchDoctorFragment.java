@@ -28,6 +28,7 @@ public class SearchDoctorFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.search_doctor_title);
+        setRetainInstance(true);
     }
 
     @Override

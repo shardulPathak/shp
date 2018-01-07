@@ -49,6 +49,8 @@ public class SecondRegisterActivity extends AppCompatActivity {
 
     private Map<String, String> mValueMap;
 
+    private static final String TAG = SecondRegisterActivity.class.getSimpleName();
+
     private UserRegistrationTask mAuthTask = null;
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -275,23 +277,37 @@ public class SecondRegisterActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            Log.d(TAG, "Inside of onPostExecute(" + result + ")");
             super.onPostExecute(result);
             Toast.makeText(SecondRegisterActivity.this, result, Toast.LENGTH_LONG).show();
 
             Log.d("result::", result);
-            if (result.contains("success")) {
-                //replace with log
-//                Toast.makeText(SecondRegisterActivity.this, result, Toast.LENGTH_LONG).show();
-                finish();
-                goToLoginActivityWithEmail();
-            } else {
-                if (result.isEmpty() || result.contains("error")) {
-                    //replace with log
-//                    Toast.makeText(SecondRegisterActivity.this, result, Toast.LENGTH_LONG).show();
-//                Toast.makeText(SecondRegisterActivity.this, getString(R.string.error_incorrect_credentials), Toast.LENGTH_LONG).show();
+
+            try {
+                JSONObject registrationResult = new JSONObject(result);
+
+                String status = registrationResult.getString("status");
+
+
+                if (status.contains("success")) {
+                    String message = registrationResult.getString("msg");
+                    Log.d("Registration successful", message);
+                    Toast.makeText(SecondRegisterActivity.this, message, Toast.LENGTH_LONG).show();
+                    finish();
+                    goToLoginActivityWithEmail();
+                } else {
+                    if (result.isEmpty() || status.contains("error")) {
+                        String error = registrationResult.getString("errors");
+                        Log.d("Registration error: ", error);
+                        Toast.makeText(SecondRegisterActivity.this, error, Toast.LENGTH_LONG).show();
+                    }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
         }
+
 
         @Override
         protected void onCancelled() {

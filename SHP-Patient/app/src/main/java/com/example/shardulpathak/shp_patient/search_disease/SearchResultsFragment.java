@@ -105,6 +105,7 @@ public class SearchResultsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setRetainInstance(true);
     }
 
     @Override
@@ -115,6 +116,7 @@ public class SearchResultsFragment extends Fragment {
 
         getDiseaseAndDoctorData();
         initView(view);
+        getActivity().setTitle(getString(R.string.search_disease_results_activity_title));
         return view;
 
     }
@@ -200,19 +202,30 @@ public class SearchResultsFragment extends Fragment {
             mDiseaseListTask = null;
 
             Log.d("result::", result);
-            if (result.contains("ok")) {
-                //replace with log
-                Toast.makeText(getActivity(), "Got other response", Toast.LENGTH_LONG).show();
-            } else {
-                if (result.isEmpty() || result.contains("error"))
+
+            try {
+                JSONObject symptomSearchResults = new JSONObject(result);
+                String status = symptomSearchResults.getString("status");
+                String message = symptomSearchResults.getString("message");
+
+                if (status.contains("ok")) {
                     //replace with log
+                    Log.d("Get search results:", message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        //replace with log
+                        Log.d("Get results failure:", message);
                     Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                String status = jsonObject.getString("status");
-                String message = jsonObject.getString("message");
                 ArrayList<String> localSymptoms = new ArrayList<>();
                 JSONArray dataDiseaseArray = jsonObject.getJSONArray("data_deseases");
 

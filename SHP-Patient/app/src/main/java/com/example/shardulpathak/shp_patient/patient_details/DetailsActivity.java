@@ -23,9 +23,7 @@ import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
 import com.example.shardulpathak.shp_patient.LoginActivity;
 import com.example.shardulpathak.shp_patient.R;
 import com.example.shardulpathak.shp_patient.feedback.FeedbackFragment;
-import com.example.shardulpathak.shp_patient.search_disease.SearchDiseaseActivity;
 import com.example.shardulpathak.shp_patient.search_disease.SearchDiseaseFragment;
-import com.example.shardulpathak.shp_patient.search_doctor.SearchDoctorActivity;
 import com.example.shardulpathak.shp_patient.search_doctor.SearchDoctorFragment;
 
 public class DetailsActivity extends AppCompatActivity
@@ -45,7 +43,7 @@ public class DetailsActivity extends AppCompatActivity
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                openSearchDiseaseActivity();
+                navigateToSearchDisease();
 
             }
         });
@@ -64,9 +62,17 @@ public class DetailsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void openSearchDiseaseActivity() {
-        SearchDiseaseFragment searchDiseaseFragment=new SearchDiseaseFragment();
-        openFragment(searchDiseaseFragment);
+    private void navigateToSearchDisease() {
+        SearchDiseaseFragment searchDiseaseFragment = new SearchDiseaseFragment();
+        openSearchDiseaseFragment(searchDiseaseFragment);
+    }
+
+    private void openSearchDiseaseFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.detail_fragment, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -115,7 +121,7 @@ public class DetailsActivity extends AppCompatActivity
      *
      */
     public void goToSearchDoctor() {
-        SearchDoctorFragment searchDoctorFragment=new SearchDoctorFragment();
+        SearchDoctorFragment searchDoctorFragment = new SearchDoctorFragment();
         openFragment(searchDoctorFragment);
     }
 

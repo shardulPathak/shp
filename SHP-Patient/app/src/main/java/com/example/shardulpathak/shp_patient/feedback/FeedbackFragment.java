@@ -34,6 +34,7 @@ public class FeedbackFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.feedback_title);
+        setRetainInstance(true);
     }
 
     @Override

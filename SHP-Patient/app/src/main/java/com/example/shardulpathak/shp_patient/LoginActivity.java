@@ -56,7 +56,7 @@ import java.util.List;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via email and password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, FragmentCommunicator {
 
@@ -100,6 +100,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
+        String email = getIntent().getStringExtra("email");
+            //do nothing
+            Log.d("email contents: ", "Email contains null: " + email);
+            mEmailView.setText(email);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
@@ -444,19 +449,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             Log.d("result::", result);
-            if (result.contains("success")) {
-                //replace with log
-//                Toast.makeText(LoginActivity.this, result, Toast.LENGTH_LONG).show();
-                Toast.makeText(LoginActivity.this, "You have successfully logged in", Toast.LENGTH_LONG).show();
-                finish();
-                goToDetailsActivity();
-            } else {
-                if (result.isEmpty() || result.contains("error"))
+
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+
+                String status = jsonObject.getString("status");
+                String message = jsonObject.getString("message");
+
+                if (status.contains("success")) {
                     //replace with log
-                    Toast.makeText(LoginActivity.this, result, Toast.LENGTH_LONG).show();
+//                Toast.makeText(LoginActivity.this, result, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                    finish();
+                    goToDetailsActivity();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        //replace with log
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
 //                Toast.makeText(LoginActivity.this, getString(R.string.error_incorrect_credentials), Toast.LENGTH_LONG).show();
 //                mPasswordView.requestFocus();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
+
         }
 
         @Override

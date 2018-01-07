@@ -31,6 +31,7 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_activity_details);
+        setRetainInstance(true);
     }
 
     @Override

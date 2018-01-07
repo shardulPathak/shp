@@ -71,9 +71,8 @@
     <string name="enter_a_symptom">Enter a symptom</string>
     <string name="symptom_select_tv">Please select a symptom from the drop-down.</string>
     <string name="selected_symptoms_text_view">Symptoms you select will appear here</string>
-    <string name="predicted_disease_tv">Predicted disease is:</string>
-    <string name="list_of_doctors_tv">List of doctors</string>
-    <string name="list_of_diseases_tv">List of diseases</string>
+    <string name="list_of_doctors_tv">Recommended Doctors for you :</string>
+    <string name="list_of_diseases_tv">Predicted Disease(s) are:</string>
     <string name="disease_cell_name_tv">Disease Name:</string>
     <string name="disease_cell_type_tv">Disease Type:</string>
     <string name="disease_cell_id_tv">Disease ID:</string>
@@ -86,4 +85,9 @@
     <string name="doc_cell_mobile_number_tv">Mobile Number:</string>
     <string name="doc_cell_email_id_tv">Email ID:</string>
     <string name="book_appointment_btn_text">Book Appointment</string>
+    <string name="search_disease_results_activity_title">Search Disease Results</string>
+    <string name="enter_first_symptom_et">Enter a symptom</string>
+    <string name="select_a_symptom_from_the_spinner_text">Select a symptom from the spinner</string>
+    <string name="search_disease_next_btn">Next</string>
+    <string name="selected_symptoms_title_tv">Symptoms you selected so far are:</string>
 </resources>

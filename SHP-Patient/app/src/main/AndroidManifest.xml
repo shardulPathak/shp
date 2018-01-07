@@ -35,8 +35,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RegisterActivity"
-            android:label="@string/register_patient_title"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/register_patient_title"/>
         <activity
             android:name=".SecondRegisterActivity"
             android:label="@string/confirm_registration_title" />

@@ -3,6 +3,7 @@ package com.example.shardulpathak.shp_patient.search_disease;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,20 +61,28 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
 
     List<String> mSymptomSpinnerList;
 
+    List<String> mSelectedSymptomsList;
+
     ArrayAdapter<String> mSymptomAdapter;
 
     String mSelectedSymptom;
     String mFirstSymptom;
 
     TextView mFragmentTitle;
-    TextView mFragmentDetails;
     EditText mFirstSymptomEditText;
+    TextView mSelectFromSpinnerTextView;
 
+    LinearLayout mSelectSymptomSpinnerView;
     Spinner mSymptomSpinner;
+
+    LinearLayout mSearchDiseaseButtonView;
     Button mNextButton;
     Button mDoneButton;
     OnClickListener mOnNextButtonClickedListener;
-    TextView mSelectedSymptomChipView;
+
+    LinearLayout mSelectedSymptomsView;
+    TextView mSelectedSymptomsTitle;
+    TextView mSelectedSymptomTextView;
     OnClickListener mOnChipDeleteSelectedListener;
 
 
@@ -85,10 +95,12 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.search_disease_title);
+        setRetainInstance(true);
     }
 
     private void addItemsToList() {
         mSymptomSpinnerList = new ArrayList<>();
+        mSelectedSymptomsList=new ArrayList<>();
         mSymptomSpinnerList.add(getActivity().getString(R.string.search_disease_symptom_spinner_prompt));
         mSymptomSpinnerList.add("");
         mSymptomSpinnerList.add("");
@@ -110,22 +122,34 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     private void initView(View view) {
 
         mFragmentTitle = (TextView) view.findViewById(R.id.search_disease_tv);
-        mFragmentDetails = (TextView) view.findViewById(R.id.other_symptom_question_tv);
 
         mFirstSymptomEditText = (EditText) view.findViewById(R.id.first_symptom_et);
 
+        mSelectFromSpinnerTextView = (TextView) view.findViewById(R.id.first_symptom_tv);
+        mSelectFromSpinnerTextView.setVisibility(View.GONE);
+
+        mSelectSymptomSpinnerView = (LinearLayout) view.findViewById(R.id.search_disease_spinner_view);
+
         mSymptomSpinner = (Spinner) view.findViewById(R.id.symptom_spinner);
+        mSymptomSpinner.setEnabled(false);
+        mSymptomSpinner.setVisibility(View.GONE);
+        mSymptomSpinner.setPrompt("");
         mSymptomSpinner.setOnItemSelectedListener(this);
         mSymptomAdapter = new ArrayAdapter<>(getActivity(), simple_spinner_item, mSymptomSpinnerList);
         mSymptomAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSymptomSpinner.setAdapter(mSymptomAdapter);
 
+
+        mSearchDiseaseButtonView = (LinearLayout) view.findViewById(R.id.search_disease_btn_view);
         mNextButton = (Button) view.findViewById(R.id.select_symptom_next_button);
         mNextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Next button clicked");
                 mFirstSymptom = mFirstSymptomEditText.getText().toString();
+                mSelectedSymptomsList.add(mFirstSymptom);
+                mDoneButton.setVisibility(View.VISIBLE);
+                mDoneButton.setEnabled(true);
                 handleFirstNextButtonClick();
                 // send the entered value to api, get other values from api, set them to spinner,
                 sendAndGetOtherValues();
@@ -133,6 +157,8 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         });
 
         mDoneButton = (Button) view.findViewById(R.id.submit_button);
+        mDoneButton.setEnabled(false);
+        mDoneButton.setVisibility(View.GONE);
         mDoneButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,13 +167,16 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
                 //send all symptoms to api, get the disease and the doctors list
                 sendAllSymptomsToResultsFragment();
 
+                //TODO need to revisit this approach
                 SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
                 openFragment(searchResultsFragment);
 
             }
         });
 
-        mSelectedSymptomChipView = (TextView) view.findViewById(R.id.selected_symptoms_chip_view);
+        mSelectedSymptomsView = (LinearLayout) view.findViewById(R.id.selected_symptoms_view);
+        mSelectedSymptomsTitle = (TextView) view.findViewById(R.id.selected_symptoms_title);
+        mSelectedSymptomTextView = (TextView) view.findViewById(R.id.selected_symptoms_text_view);
     }
 
     private void openFragment(Fragment fragment) {
@@ -174,6 +203,16 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         mAuthTask.execute();
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
 
     public class GetSymptomsTask extends AsyncTask<String, Void, String> {
 
@@ -233,19 +272,27 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
             mAuthTask = null;
 
             Log.d("result::", result);
-            if (result.contains("ok")) {
-                //replace with log
-                Toast.makeText(getActivity(), "Got other response", Toast.LENGTH_LONG).show();
-            } else {
-                if (result.isEmpty() || result.contains("error"))
-                    //replace with log
-                    Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+
+            try {
+                JSONObject getSymptomsResults = new JSONObject(result);
+
+                String status = getSymptomsResults.getString("status");
+                String message = getSymptomsResults.getString("message");
+                if (status.contains("ok")) {
+                    Log.d("Get Symptoms result: ", message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        Log.d("Get Symptoms failure : ", message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                    makeChangesForFirstSymptom();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                String status = jsonObject.getString("status");
-                String message = jsonObject.getString("message");
                 ArrayList<String> localSymptoms = new ArrayList<>();
                 JSONArray dataArray = jsonObject.getJSONArray("data");
                 for (int i = 0; i < dataArray.length(); i++) {
@@ -270,13 +317,31 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
+    private void makeChangesForFirstSymptom() {
+        mSelectedSymptomTextView.setVisibility(View.GONE);
+
+        mFirstSymptomEditText.setVisibility(View.VISIBLE);
+        mFirstSymptomEditText.setEnabled(true);
+
+        mSelectFromSpinnerTextView.setVisibility(View.GONE);
+        mSymptomSpinner.setEnabled(false);
+        mSymptomSpinner.setVisibility(View.GONE);
+        mSelectedSymptomsView.setVisibility(View.GONE);
+
+    }
+
 
     private void handleFirstNextButtonClick() {
-        mSelectedSymptomChipView.setVisibility(View.VISIBLE);
-        mSelectedSymptomChipView.append(mFirstSymptom);
+        mSelectedSymptomTextView.setVisibility(View.VISIBLE);
+        mSelectedSymptomTextView.append(mFirstSymptom);
         mFirstSymptomEditText.setText("");
-        mFirstSymptomEditText.setHint("Please select other symptoms from the spinner now.");
         mFirstSymptomEditText.setEnabled(false);
+        mFirstSymptomEditText.setVisibility(View.GONE);
+        mSelectFromSpinnerTextView.setVisibility(View.VISIBLE);
+        mSymptomSpinner.setVisibility(View.VISIBLE);
+        mSymptomSpinner.setEnabled(true);
+        mSymptomSpinner.setPrompt(getString(R.string.search_disease_symptom_spinner_prompt));
+        mSelectedSymptomsView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -301,29 +366,30 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         mSelectedSymptom = parent.getItemAtPosition(position).toString();
         if (!mSelectedSymptom.equals(getActivity().getString(R.string.search_disease_symptom_spinner_prompt))) {
             Log.d(TAG, "Selected symptom from the symptom spinner is: " + mSelectedSymptom);
-            mSelectedSymptomChipView.setVisibility(View.VISIBLE);
-//            mSelectedSymptomChipView.append(mSelectedSymptom);
+            mSelectedSymptomTextView.setVisibility(View.VISIBLE);
+//            mSelectedSymptomTextView.append(mSelectedSymptom);
             Toast.makeText(getActivity(), "Selected the " + mSelectedSymptom + " symptom from the list", Toast.LENGTH_SHORT).show();
-            makeAChip(mSelectedSymptom);
+            addToSelectedSymptoms(mSelectedSymptom);
         } else {
             Log.d(TAG, "No symptom selected from the symptom spinner");
             Toast.makeText(getActivity(), "Please select a symptom from the list", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void makeAChip(String label) {
-//        int marginLeft = mSelectedSymptomChipView.getLeft();
-//        int marginRight = mSelectedSymptomChipView.getRight();
-//        int marginTop = mSelectedSymptomChipView.getTop();
-//        int marginBottom = mSelectedSymptomChipView.getBottom();
+    private void addToSelectedSymptoms(String symptom) {
+//        int marginLeft = mSelectedSymptomTextView.getLeft();
+//        int marginRight = mSelectedSymptomTextView.getRight();
+//        int marginTop = mSelectedSymptomTextView.getTop();
+//        int marginBottom = mSelectedSymptomTextView.getBottom();
 //        ChipView chipView = new ChipView(getActivity());
 //        chipView.setLabel(label);
 //        chipView.setLeft(marginLeft + 15);
 //        chipView.setRight(marginRight - 15);
 //        chipView.setTop(marginTop);
 //        chipView.setBottom(marginBottom);
-//        mSelectedSymptomChipView.addView(chipView);
-        mSelectedSymptomChipView.append(", " + label);
+//        mSelectedSymptomTextView.addView(chipView);
+        mSelectedSymptomsList.add(symptom);
+        mSelectedSymptomTextView.append(", " + symptom);
     }
 
     @Override

@@ -1,5 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,13 +16,14 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
+            android:freezesText="true"
             android:text="@string/disease_prediction"
             android:textSize="20sp"
             android:textStyle="bold" />
 
 
-        <TextView
-            android:id="@+id/other_symptom_question_tv"
+        <EditText
+            android:id="@+id/first_symptom_et"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_disease_tv"
@@ -32,56 +32,68 @@
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
-            android:text="@string/symptom_select_tv"
-            android:textSize="17sp" />
+            android:freezesText="true"
+            android:hint="@string/enter_first_symptom_et" />
 
-        <EditText
-            android:id="@+id/first_symptom_et"
+        <TextView
+            android:id="@+id/first_symptom_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/other_symptom_question_tv"
+            android:layout_below="@+id/first_symptom_et"
             android:layout_marginEnd="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
-            android:hint="Enter a symptom" />
+            android:freezesText="true"
+            android:text="@string/select_a_symptom_from_the_spinner_text"
+            android:visibility="gone" />
 
-
-        <Spinner
-            android:id="@+id/symptom_spinner"
+        <LinearLayout
+            android:id="@+id/search_disease_spinner_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/first_symptom_et"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:prompt="@string/search_disease_symptom_spinner_prompt"
-            android:spinnerMode="dropdown" />
+            android:layout_below="@id/first_symptom_tv"
+            android:layout_marginTop="20dp">
 
-        <Button
-            android:id="@+id/submit_button"
+            <Spinner
+                android:id="@+id/symptom_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:freezesText="true"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/search_disease_btn_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/symptom_spinner"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/submit_button" />
+            android:layout_below="@+id/search_disease_spinner_view"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/select_symptom_next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/symptom_spinner"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:text="Next" />
+            <Button
+                android:id="@+id/select_symptom_next_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/search_disease_next_btn" />
+
+            <Button
+                android:id="@+id/submit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginStart="20dp"
+                android:text="@string/submit_button" />
+        </LinearLayout>
 
         <!--<com.pchmn.materialchips.ChipView-->
         <!--android:id="@+id/selected_symptoms_chip_view"-->
@@ -98,16 +110,34 @@
         <!--app:hasAvatarIcon="false"-->
         <!--android:visibility="gone"/>-->
 
-        <TextView
-            android:id="@+id/selected_symptoms_chip_view"
+
+        <LinearLayout
+            android:id="@+id/selected_symptoms_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/submit_button"
+            android:layout_below="@+id/search_disease_btn_view"
             android:layout_marginEnd="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="20dp"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/selected_symptoms_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:freezesText="true"
+                android:text="@string/selected_symptoms_title_tv" />
+
+            <TextView
+                android:id="@+id/selected_symptoms_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:freezesText="true" />
+        </LinearLayout>
     </RelativeLayout>
 </FrameLayout>
