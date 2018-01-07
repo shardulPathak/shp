@@ -171,6 +171,9 @@ public class DetailsActivity extends AppCompatActivity
             case R.id.nav_logout:
                 attemptLogout();
                 break;
+
+            default:
+                throw new IllegalArgumentException();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

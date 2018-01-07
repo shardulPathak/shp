@@ -90,4 +90,11 @@
     <string name="select_a_symptom_from_the_spinner_text">Select a symptom from the spinner</string>
     <string name="search_disease_next_btn">Next</string>
     <string name="selected_symptoms_title_tv">Symptoms you selected so far are:</string>
+    <string name="select_parameter_search_doctor_tv_text">Select a parameter to search doctor: </string>
+    <string name="search_doc_opt_type_name">Name</string>
+    <string name="search_doc_opt_type_address">Address</string>
+    <string name="search_doc_opt_type_category">Category</string>
+    <string name="search_doc_submit_btn_text">Search</string>
+    <string name="edit_details_cancel_btn_text">Cancel</string>
+    <string name="edit_details_submit_btn_text">Edit</string>
 </resources>
