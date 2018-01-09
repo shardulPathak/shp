@@ -102,9 +102,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         String email = getIntent().getStringExtra("email");
-            //do nothing
-            Log.d("email contents: ", "Email contains null: " + email);
-            mEmailView.setText(email);
+        //do nothing
+        Log.d("email contents: ", "Email contains null: " + email);
+        mEmailView.setText(email);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
@@ -202,19 +202,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView = mPasswordView;
             cancel = true;
         }
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        // Check if password is not empty
+        if (!TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_short_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        //check if the entered password is valid
+        if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
-        // Check for a valid email address.
+        // Check for a non-empty email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
+            // Check for a valid email address.
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -472,8 +480,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
         }
 
         @Override

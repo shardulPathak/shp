@@ -156,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isUserAgeValid(String age) {
-        return age.length() <= 3;
+        return age.length() <= 3 && Integer.parseInt(age) <= 100;
     }
 
     private boolean isUserNameValid(String name) {

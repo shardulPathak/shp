@@ -10,7 +10,8 @@
     <string name="register_title">Register yourself:-</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_password">This password is invalid</string>
+    <string name="error_short_password">This password is too short</string>
     <string name="error_incorrect_credentials">You have entered the incorrect credentials.</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
@@ -63,10 +64,13 @@
     <string name="nav_drawer_search_doctor">Search Doctor</string>
     <string name="nav_drawer_feedback">Feedback</string>
     <string name="nav_drawer_logout">Logout</string>
+
     <string name="submit_button">Done</string>
     <string name="name_hint">Name</string>
     <string name="register_patient_title">Register Patient</string>
     <string name="confirm_registration_title">Complete registration</string>
+
+
     <string name="disease_prediction">Disease Prediction</string>
     <string name="enter_a_symptom">Enter a symptom</string>
     <string name="symptom_select_tv">Please select a symptom from the drop-down.</string>
@@ -90,11 +94,16 @@
     <string name="select_a_symptom_from_the_spinner_text">Select a symptom from the spinner</string>
     <string name="search_disease_next_btn">Next</string>
     <string name="selected_symptoms_title_tv">Symptoms you selected so far are:</string>
+
+
     <string name="select_parameter_search_doctor_tv_text">Select a parameter to search doctor: </string>
     <string name="search_doc_opt_type_name">Name</string>
     <string name="search_doc_opt_type_address">Address</string>
     <string name="search_doc_opt_type_category">Category</string>
     <string name="search_doc_submit_btn_text">Search</string>
+
+
     <string name="edit_details_cancel_btn_text">Cancel</string>
-    <string name="edit_details_submit_btn_text">Edit</string>
+    <string name="edit_details_submit_btn_text">Update</string>
+    <string name="edit_details_edit_btn_text">Edit</string>
 </resources>
