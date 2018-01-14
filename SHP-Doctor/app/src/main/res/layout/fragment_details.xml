@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,7 +12,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        app:hintEnabled="false">
 
         <EditText
             android:id="@+id/name_value"
@@ -21,6 +23,7 @@
             android:layout_marginLeft="5sp"
             android:layout_marginStart="5sp"
             android:ems="25"
+            android:enabled="false"
             android:hint="@string/name_hint"
             android:inputType="textPersonName"
             android:maxLength="25"
@@ -35,7 +38,8 @@
         android:layout_below="@id/name_view"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="5dp"
+        app:hintEnabled="false">
 
         <EditText
             android:id="@+id/address_value"
@@ -45,7 +49,8 @@
             android:layout_marginLeft="5sp"
             android:layout_marginStart="5sp"
             android:ems="25"
-            android:hint="@string/address_hint"
+            android:enabled="false"
+            android:hint="@string/patient_address_hint"
             android:inputType="textPostalAddress"
             android:maxLength="25"
             android:textSize="15sp" />
@@ -59,7 +64,8 @@
         android:layout_below="@id/address_view"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        app:hintEnabled="false">
 
         <EditText
             android:id="@+id/contact_value"
@@ -69,9 +75,35 @@
             android:layout_marginLeft="5sp"
             android:layout_marginStart="5sp"
             android:ems="10"
-            android:hint="@string/contact_hint"
+            android:enabled="false"
+            android:hint="@string/patient_contact_hint"
             android:inputType="number"
             android:maxLength="10"
+            android:textSize="15sp" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/email_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/contact_view"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:hintEnabled="false">
+
+        <EditText
+            android:id="@+id/email_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contact_view"
+            android:layout_marginLeft="5sp"
+            android:layout_marginStart="5sp"
+            android:ems="10"
+            android:enabled="false"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
             android:textSize="15sp" />
     </android.support.design.widget.TextInputLayout>
 
@@ -80,8 +112,19 @@
         android:id="@+id/button_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/contact_view"
+        android:layout_below="@id/email_view"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="@string/submit_button" />
+        android:text="@string/edit_details_edit_btn_text" />
+
+    <Button
+        android:id="@+id/edit_details_cancel_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_update"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20sp"
+        android:text="@string/edit_details_cancel_btn_text"
+        android:visibility="gone" />
+
 </RelativeLayout>

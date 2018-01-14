@@ -23,6 +23,7 @@ import com.example.shardulpathak.shp_patient.R;
 import com.example.shardulpathak.shp_patient.search_disease.DoctorDetails;
 import com.example.shardulpathak.shp_patient.search_disease.DoctorListAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,6 +60,7 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
     private ArrayAdapter<String> mSearchDoctorAdapter;
 
     private EditText mSelectedOptionValue;
+    private String mSearchQuery;
     TextInputLayout mSelectedOptionValueLayout;
 
     Button mSearchDoctorButton;
@@ -72,6 +74,15 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
 
 
     private GetDoctorSearchResultsTask mAuthTask = null;
+
+    private String mDoctorID;
+    private String mDoctorEmail;
+    private String mDocCategory;
+    private String mDocFullName;
+    private String mDocAddress;
+    private String mDocCity;
+    private String mDocMobile;
+    private String mDocHospitalName;
 
     public SearchDoctorFragment() {
         // Required empty public constructor
@@ -107,21 +118,22 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
 
         mSelectedOptionValueLayout = (TextInputLayout) v.findViewById(R.id.selected_option_view);
         mSelectedOptionValue = (EditText) v.findViewById(R.id.selected_option_value);
+        mSearchQuery = mSelectedOptionValue.getText().toString();
+
+        mDoctorDetailsArrayList = new ArrayList<>();
+        mSearchResultsList = (ListView) v.findViewById(R.id.search_doc_results_list);
+        mDoctorListAdapter = new DoctorListAdapter(getContext(), mDoctorDetailsArrayList);
+        mSearchResultsList.setAdapter(mDoctorListAdapter);
 
         mSearchDoctorButton = (Button) v.findViewById(R.id.search_doc_submit_btn);
         mSearchDoctorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Search Doctor button clicked", Toast.LENGTH_SHORT).show();
-
                 attemptDoctorSearch();
             }
         });
-
         addSearchResultsToList();
-        mSearchResultsList = (ListView) v.findViewById(R.id.search_doc_results_list);
-        mDoctorListAdapter = new DoctorListAdapter(getContext(), mDoctorDetailsArrayList);
-        mSearchResultsList.setAdapter(mDoctorListAdapter);
 
     }
 
@@ -133,15 +145,14 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             return;
         }
 
-        String getOtherSymptomsURL = "http://skillab.in/medical_beta/catalog/user/get_symptoms_api";
         Log.d(TAG, "Calling the Async task for fetching other symptoms list");
         mAuthTask = new GetDoctorSearchResultsTask();
         mAuthTask.execute();
     }
 
+
     private void addSearchResultsToList() {
-        mDoctorDetailsArrayList = new ArrayList<>();
-        mDoctorDetailsArrayList.add(new DoctorDetails("1", "abcd@gmail.com", "General Physician", "Ramesh Mahajan", "Sitabuildi", "Nagpur", "9876548798", "Mahatme Hospital"));
+
     }
 
     private void addOptionsToList() {
@@ -193,10 +204,10 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             Log.d(TAG, "Inside doInBackground(" + params + ")");
             try {
 
-                String getOtherSymptomsURL = "";
+                String getOtherSymptomsURL = "http://skillab.in/medical_beta/main/getDoctors";
                 URL url = new URL(getOtherSymptomsURL);
                 JSONObject postDataParams = new JSONObject();
-                postDataParams.put("symtom", "Joint Pain");
+                postDataParams.put(mSelectedOption, mSearchQuery);
 //                postDataParams.put("password", mPassword);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -241,29 +252,42 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             Log.d(TAG, "Inside onPostExecute(" + result + ")");
             super.onPostExecute(result);
             mAuthTask = null;
-
+            Toast.makeText(getActivity(), "result received is :" + result, Toast.LENGTH_LONG).show();
             Log.d("result::", result);
 
             try {
-                JSONObject getSymptomsResults = new JSONObject(result);
-
-                String status = getSymptomsResults.getString("status");
-                String message = getSymptomsResults.getString("message");
-                if (status.contains("ok")) {
-                    Log.d("Get Symptoms result: ", message);
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                } else {
-                    if (result.isEmpty() || status.contains("error"))
-                        Log.d("Get Symptoms failure : ", message);
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                JSONObject getDoctorDetailsResult = new JSONObject(result);
+                JSONArray doctorListArray = getDoctorDetailsResult.getJSONArray("data_doctors");
+                for (int i = 0; i < doctorListArray.length(); i++) {
+                    JSONObject doctorDetails = doctorListArray.getJSONObject(i);
+                    mDoctorID = doctorDetails.getString("user_id");
+                    String docFirstName = doctorDetails.getString("fname");
+                    String docLastName = doctorDetails.getString("lname");
+                    mDocFullName = docFirstName + " " + docLastName;
+                    mDoctorEmail = doctorDetails.getString("email");
+                    mDocHospitalName = doctorDetails.getString("s_name");
+                    mDocCategory = doctorDetails.getString("category");
+                    mDocAddress = doctorDetails.getString("address");
+                    mDocCity = doctorDetails.getString("city");
+                    mDocMobile = doctorDetails.getString("mobile");
+                    if (mDoctorDetailsArrayList != null) {
+                        mDoctorDetailsArrayList = new ArrayList<>();
+                    }
+                    mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
+                            mDocCity, mDocMobile, mDocHospitalName));
+                    mDoctorListAdapter.notifyDataSetChanged();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//                String status = getSymptomsResults.getString("status");
+//                String message = getSymptomsResults.getString("message");
+//                if (status.contains("ok")) {
+//                    Log.d("Get Symptoms result: ", message);
+//                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+//                } else {
+//                    if (result.isEmpty() || status.contains("error"))
+//                        Log.d("Get Symptoms failure : ", message);
+//                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+//                }
 
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                ArrayList<String> localSymptoms = new ArrayList<>();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

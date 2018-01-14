@@ -113,7 +113,6 @@ public class SearchResultsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
-
         getDiseaseAndDoctorData();
         initView(view);
         getActivity().setTitle(getString(R.string.search_disease_results_activity_title));
@@ -256,7 +255,6 @@ public class SearchResultsFragment extends Fragment {
                     mDocHospitalName = doctorInfo.getString("hospital_name");
                     mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName,
                             mDocAddress, mDocCity, mDocMobile, mDocHospitalName));
-
                     mDoctorListAdapter.notifyDataSetChanged();
 
 //                    Toast.makeText(getActivity(), "Doctor details are: " + mDoctorID + ", " + mDoctorEmail + ", " + mDocCategory + ", " +

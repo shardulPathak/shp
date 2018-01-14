@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        mIsInSession=getIntent().getBooleanExtra("logoutFlag",false);
+        mIsInSession = getIntent().getBooleanExtra("logoutFlag", false);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     /**
-     *     Callback received when a permissions request has been completed.
+     * Callback received when a permissions request has been completed.
      */
 
 
@@ -230,7 +230,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isIDValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@")&&email.contains(".com");
+        return email.contains("@") && email.contains(".com");
     }
 
     @Override
@@ -418,17 +418,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             Log.d("login_result", result);
 //            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            if (result.contains("success")) {
-                Toast.makeText(getApplicationContext(), "You have successfully logged in", Toast.LENGTH_SHORT).show();
-                Log.d("connected", "Connection successful");
-                mIsInSession = true;
-                navigateToDetailsActivity();
-            } else if (result.contains("error")) {
-                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-//                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+
+            try {
+                JSONObject loginResult = new JSONObject(result);
+                String status = loginResult.getString("status");
+                String message = loginResult.getString("message");
+
+                if (status.contains("success")) {
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    Log.d("connected", "Connection successful");
+                    mIsInSession = true;
+                    navigateToDetailsActivity();
+                } else if (result.contains("error")) {
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    mPasswordView.requestFocus();
 //                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                mIsInSession = false;
+                    mIsInSession = false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 

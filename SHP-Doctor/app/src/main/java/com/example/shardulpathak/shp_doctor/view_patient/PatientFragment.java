@@ -1,18 +1,37 @@
 package com.example.shardulpathak.shp_doctor.view_patient;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.shardulpathak.shp_doctor.DummyContent;
 import com.example.shardulpathak.shp_doctor.IFragmentCommunicator;
 import com.example.shardulpathak.shp_doctor.R;
+import com.example.shardulpathak.shp_doctor.view_disease.DiseaseFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -22,10 +41,20 @@ import com.example.shardulpathak.shp_doctor.R;
  */
 public class PatientFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private static final String TAG = DiseaseFragment.class.getSimpleName();
+    private TextView mViewPatientTextView;
+    private ListView mViewPatientListView;
+    private PatientListAdapter mViewPatientAdapter;
+
+    private List<Patient> mPatientsList;
+
+    private GetPatientsListTask mPatientListTask = null;
+
+
+    private String mPatientId;
+    private String mPatientName;
+    private String mPatientAge;
+
     private IFragmentCommunicator mListener;
 
     /**
@@ -35,23 +64,11 @@ public class PatientFragment extends Fragment {
     public PatientFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static PatientFragment newInstance(int columnCount) {
-        PatientFragment fragment = new PatientFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override
@@ -59,19 +76,31 @@ public class PatientFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_patient_list, container, false);
         getActivity().setTitle(R.string.title_view_patient);
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new PatientRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-        }
+        getPatientsList();
+        initView(view);
         return view;
+    }
+
+    private void getPatientsList() {
+        Log.d(TAG, "Inside getPatientsList()");
+        if (mPatientListTask != null) {
+            Log.d(TAG, "Inside if, the Async task object is not null. Returning....");
+            return;
+        }
+        if (mPatientsList == null) {
+            mPatientsList = new ArrayList<>();
+        }
+
+        Log.d(TAG, "Calling the Async task for fetching patient list.");
+        mPatientListTask = new GetPatientsListTask();
+        mPatientListTask.execute();
+    }
+
+    private void initView(View v) {
+        mViewPatientTextView = (TextView) v.findViewById(R.id.view_patient_tv);
+        mViewPatientListView = (ListView) v.findViewById(R.id.view_patient_list);
+        mViewPatientAdapter = new PatientListAdapter(getActivity(), mPatientsList);
+        mViewPatientListView.setAdapter(mViewPatientAdapter);
     }
 
 
@@ -92,4 +121,142 @@ public class PatientFragment extends Fragment {
         mListener = null;
     }
 
+    public class GetPatientsListTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Log.d(TAG, "Inside doInBackground(" + params + ")");
+            try {
+
+                String getPatientsListURL = "http://skillab.in/medical_beta/main/getPatientListAPI";
+                URL url = new URL(getPatientsListURL);
+                JSONObject postDataParams = new JSONObject();
+//                postDataParams.put("symtoms", "'Joint Pain','cold'");
+//                postDataParams.put("password", mPassword);
+                Log.e("params", postDataParams.toString());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                Log.d(TAG, "All connection parameters setting done.");
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        Log.d(TAG, line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                } else {
+                    return "false : " + responseCode;
+                }
+            } catch (IOException | JSONException e) {
+                return "Exception ::" + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            Log.d(TAG, "Inside onPostExecute(" + result + ")");
+            super.onPostExecute(result);
+            mPatientListTask = null;
+
+            Log.d("result::", result);
+            Toast.makeText(getActivity(), "Result obtained on view patient is: " + result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject symptomSearchResults = new JSONObject(result);
+                String status = symptomSearchResults.getString("status");
+                String message = symptomSearchResults.getString("message");
+
+                if (status.contains("ok")) {
+                    //replace with log
+                    Log.d("Get search results:", message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        //replace with log
+                        Log.d("Get results failure:", message);
+                    Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+//            try {
+//                JSONObject jsonObject = new JSONObject(result);
+//                ArrayList<String> localSymptoms = new ArrayList<>();
+//                JSONArray dataDiseaseArray = jsonObject.getJSONArray("data_deseases");
+//
+//                for (int i = 0; i < dataDiseaseArray.length(); i++) {
+//                    JSONObject diseaseInfo = dataDiseaseArray.getJSONObject(i);
+//                    mDiseaseID = diseaseInfo.getString("disease_id");
+//                    mDiseaseName = diseaseInfo.getString("disease_name");
+//                    mDiseaseType = diseaseInfo.getString("type");
+//
+//                    mDiseasesList.add(new Disease(mDiseaseID, mDiseaseName, mDiseaseType));
+//                    mViewDiseaseAdapter.notifyDataSetChanged();
+//
+//
+////                    Toast.makeText(getActivity(), "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".", Toast.LENGTH_SHORT).show();
+//                    Log.d(TAG, "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".");
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
+            mPatientId = "3";
+            mPatientName = "abc";
+            mPatientAge = "23";
+            mPatientsList.add(new Patient(mPatientId, mPatientName, mPatientAge));
+            mViewPatientAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            mPatientListTask = null;
+        }
+    }
+
+    public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        Iterator<String> itr = params.keys();
+        while (itr.hasNext()) {
+            String key = itr.next();
+            Object value = params.get(key);
+            if (first) {
+                first = false;
+            } else {
+                result.append("&");
+            }
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
+        return result.toString();
+    }
 }
