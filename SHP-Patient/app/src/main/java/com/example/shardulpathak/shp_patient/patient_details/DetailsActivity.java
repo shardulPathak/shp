@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IBaseActivity;
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
@@ -62,11 +63,19 @@ public class DetailsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * Navigates to the search disease screen
+     */
     private void navigateToSearchDisease() {
         SearchDiseaseFragment searchDiseaseFragment = new SearchDiseaseFragment();
         openSearchDiseaseFragment(searchDiseaseFragment);
     }
 
+    /**
+     * Navigates to the search disease screen
+     *
+     * @param fragment fragment to be opened
+     */
     private void openSearchDiseaseFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -86,7 +95,7 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     /**
-     *
+     * Shows the logout dialog
      */
     @Override
     public void attemptLogout() {
@@ -111,14 +120,13 @@ public class DetailsActivity extends AppCompatActivity
                     }
                 });
 
-
         AlertDialog logoutDialog = alertBuilder.create();
         logoutDialog.show();
 
     }
 
     /**
-     *
+     * Navigates to the search doctor screen
      */
     public void goToSearchDoctor() {
         SearchDoctorFragment searchDoctorFragment = new SearchDoctorFragment();
@@ -126,7 +134,7 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     /**
-     *
+     * Navigates to the feedback screen
      */
     public void goToFeedback() {
         FeedbackFragment feedbackFragment = new FeedbackFragment();
@@ -135,7 +143,7 @@ public class DetailsActivity extends AppCompatActivity
 
 
     /**
-     *
+     * Navigates to the details screen
      */
     public void goToDetails() {
         DetailsFragment details = new DetailsFragment();
@@ -143,6 +151,11 @@ public class DetailsActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Opens a particular fragment
+     *
+     * @param fragment fragment to be opened
+     */
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -151,6 +164,7 @@ public class DetailsActivity extends AppCompatActivity
         fragmentTransaction.commit();
 
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -167,7 +181,11 @@ public class DetailsActivity extends AppCompatActivity
                 break;
             case R.id.nav_search_doctor:
                 goToSearchDoctor();
+
+            case R.id.appointments:
+                goToAppointments();
                 break;
+
             case R.id.nav_logout:
                 attemptLogout();
                 break;
@@ -178,6 +196,13 @@ public class DetailsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * Navigates to the appointments screen
+     */
+    private void goToAppointments() {
+        Toast.makeText(getBaseContext(), "Appointments option selected", Toast.LENGTH_SHORT).show();
     }
 
     @Override

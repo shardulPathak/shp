@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.shardulpathak.shp_doctor.IFragmentCommunicator;
 import com.example.shardulpathak.shp_doctor.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -99,7 +100,6 @@ public class DiseaseFragment extends Fragment {
         Log.d(TAG, "Calling the Async task for fetching disease list.");
         mDiseaseListTask = new GetDiseasesListTask();
         mDiseaseListTask.execute();
-
     }
 
 
@@ -181,50 +181,47 @@ public class DiseaseFragment extends Fragment {
             mDiseaseListTask = null;
 
             Log.d("result::", result);
-            Toast.makeText(getActivity(), "Result obtained on view disease is: " + result, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "Result obtained on view disease is: " + result, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject symptomSearchResults = new JSONObject(result);
                 String status = symptomSearchResults.getString("status");
-                String message = symptomSearchResults.getString("message");
 
-                if (status.contains("ok")) {
+                if (status.contains("success")) {
                     //replace with log
-                    Log.d("Get search results:", message);
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                    Log.d("Get disease results:", status);
+                    Toast.makeText(getActivity(), status, Toast.LENGTH_LONG).show();
                 } else {
                     if (result.isEmpty() || status.contains("error"))
                         //replace with log
-                        Log.d("Get results failure:", message);
-                    Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+                        Log.d("disease result failure:", status);
+                    Toast.makeText(getActivity(), status, Toast.LENGTH_LONG).show();
                 }
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-//            try {
-//                JSONObject jsonObject = new JSONObject(result);
-//                ArrayList<String> localSymptoms = new ArrayList<>();
-//                JSONArray dataDiseaseArray = jsonObject.getJSONArray("data_deseases");
-//
-//                for (int i = 0; i < dataDiseaseArray.length(); i++) {
-//                    JSONObject diseaseInfo = dataDiseaseArray.getJSONObject(i);
-//                    mDiseaseID = diseaseInfo.getString("disease_id");
-//                    mDiseaseName = diseaseInfo.getString("disease_name");
-//                    mDiseaseType = diseaseInfo.getString("type");
-//
-//                    mDiseasesList.add(new Disease(mDiseaseID, mDiseaseName, mDiseaseType));
-//                    mViewDiseaseAdapter.notifyDataSetChanged();
-//
-//
-////                    Toast.makeText(getActivity(), "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".", Toast.LENGTH_SHORT).show();
-//                    Log.d(TAG, "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".");
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                ArrayList<String> localSymptoms = new ArrayList<>();
+                JSONArray dataDiseaseArray = jsonObject.getJSONArray("data");
+
+                for (int i = 0; i < dataDiseaseArray.length(); i++) {
+                    JSONObject diseaseInfo = dataDiseaseArray.getJSONObject(i);
+                    mDiseaseID = diseaseInfo.getString("disease_id");
+                    mDiseaseName = diseaseInfo.getString("disease_name");
+                    mDiseaseType = diseaseInfo.getString("type");
+
+                    mDiseasesList.add(new Disease(mDiseaseID, mDiseaseName, mDiseaseType));
+                    mViewDiseaseAdapter.notifyDataSetChanged();
+
+
+//                    Toast.makeText(getActivity(), "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

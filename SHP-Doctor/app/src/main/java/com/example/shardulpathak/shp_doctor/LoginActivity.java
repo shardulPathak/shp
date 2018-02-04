@@ -77,6 +77,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private String mUser_id;
+    private PreferencesManagement mPreferencesManagement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mIsInSession = getIntent().getBooleanExtra("logoutFlag", false);
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     @Override
@@ -423,7 +426,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 JSONObject loginResult = new JSONObject(result);
                 String status = loginResult.getString("status");
                 String message = loginResult.getString("message");
+                JSONObject userObject = loginResult.getJSONObject("user");
+                mUser_id = userObject.getString("user_id");
 
+                storeDataInPreferences(result, mUser_id);
                 if (status.contains("success")) {
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     Log.d("connected", "Connection successful");
@@ -472,6 +478,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             result.append(URLEncoder.encode(value.toString(), "UTF-8"));
         }
         return result.toString();
+    }
+
+    /**
+     * @param result
+     * @param userID
+     */
+    private void storeDataInPreferences(String result, String userID) throws JSONException {
+        JSONObject userDetails = new JSONObject(result);
+        JSONObject user = userDetails.getJSONObject("user");
+        String userEmail = user.getString("email");
+        mPreferencesManagement.putDataInPreferences(this, getString(R.string.pref_user_email_id_key), userEmail);
+        mPreferencesManagement.putDataInPreferences(this, getString(R.string.pref_user_id_key), userID);
     }
 }
 

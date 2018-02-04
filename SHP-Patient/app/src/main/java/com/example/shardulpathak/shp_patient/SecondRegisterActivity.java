@@ -233,10 +233,12 @@ public class SecondRegisterActivity extends AppCompatActivity {
                 postDataParams.put("password", mMap.get("password"));
                 postDataParams.put("confirm_password", mMap.get("confirmpassword"));
                 postDataParams.put("fname", mMap.get("name"));
+                postDataParams.put("age", mMap.get("age"));
                 postDataParams.put("email", mMap.get("email"));
                 postDataParams.put("gender", mMap.get("gender"));
                 postDataParams.put("mobile", mMap.get("contact"));
                 postDataParams.put("address", mMap.get("address"));
+                postDataParams.put("user_role", mMap.get("3"));
 
 
                 Log.e("params", postDataParams.toString());
@@ -279,7 +281,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             Log.d(TAG, "Inside of onPostExecute(" + result + ")");
             super.onPostExecute(result);
-            Toast.makeText(SecondRegisterActivity.this, result, Toast.LENGTH_LONG).show();
+//            Toast.makeText(SecondRegisterActivity.this, result, Toast.LENGTH_LONG).show();
 
             Log.d("result::", result);
 

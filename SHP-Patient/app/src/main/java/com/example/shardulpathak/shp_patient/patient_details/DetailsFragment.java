@@ -15,8 +15,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
+import com.example.shardulpathak.shp_patient.PreferencesManagement;
 import com.example.shardulpathak.shp_patient.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,10 +63,12 @@ public class DetailsFragment extends Fragment {
     private String mEmailToBeSent;
 
     private EditDetailsTask mEditDetailsTask = null;
+    private GetDetailsTask mGetDetailsTask = null;
 
     private IFragmentCommunicator mListener;
 
-    private boolean mIsEditing;
+    private boolean mAreDetailsSaved;
+    private PreferencesManagement mPreferencesManagement;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -75,6 +79,26 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.title_activity_details);
         setRetainInstance(true);
+        if (!mAreDetailsSaved) {
+            mPreferencesManagement=new PreferencesManagement();
+            mGetDetailsTask = new GetDetailsTask();
+            mGetDetailsTask.execute();
+        } else {
+            String name = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.detail_name));
+            mNameEditText.setText(name);
+            String address = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.detail_address));
+            mNameEditText.setText(address);
+            String email = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.detail_email));
+            mNameEditText.setText(email);
+            String contact = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.detail_contact));
+            mNameEditText.setText(contact);
+        }
+
+
+//        if (mAreDetailsSaved) {
+//
+//            mAreDetailsSaved = false;
+//        }
     }
 
     @Override
@@ -148,6 +172,19 @@ public class DetailsFragment extends Fragment {
         Log.d(TAG, "Calling the Async task for editing the patient details");
         mEditDetailsTask = new EditDetailsTask();
         mEditDetailsTask.execute();
+        saveDetailsToPreferences();
+    }
+
+    /**
+     *
+     */
+    private void saveDetailsToPreferences() {
+        mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.detail_name), mNameEditText.getText().toString());
+        mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.detail_address), mAddressEditText.getText().toString());
+        mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.detail_contact), mContactEditText.getText().toString());
+        mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.detail_email), mEmailEditText.getText().toString());
+        mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.details_saved_to_preferences_flag), "true");
+        mAreDetailsSaved = true;
     }
 
     private void makeViewNotEditable() {
@@ -198,6 +235,113 @@ public class DetailsFragment extends Fragment {
     }
 
 
+    public class GetDetailsTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Log.d(TAG, "Inside doInBackground(" + params + ")");
+            try {
+                String userId = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key));
+                String getDetailsURL = "http://skillab.in/medical_beta/main/getPatientListAPI";
+                URL url = new URL(getDetailsURL);
+                JSONObject postDataParams = new JSONObject();
+
+                postDataParams.put("user_id", userId);
+
+                Log.e("params", postDataParams.toString());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                Log.d(TAG, "All connection parameters setting done.");
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        Log.d(TAG, line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                } else {
+                    return "false : " + responseCode;
+                }
+            } catch (IOException | JSONException e) {
+                return "Exception ::" + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            Log.d(TAG, "Inside onPostExecute(" + result + ")");
+            super.onPostExecute(result);
+            mGetDetailsTask = null;
+
+            Log.d("result::", result);
+//            Toast.makeText(getActivity(), "Result obtained on get details is: " + result, Toast.LENGTH_SHORT).show();
+
+            try {
+
+                JSONObject getUserDetails = new JSONObject(result);
+                String status = getUserDetails.getString("status");
+                if (status.contains("success")) {
+                } else {
+                    if (result.isEmpty() || status.contains("error")) {
+                    }
+                }
+
+                JSONArray userData = getUserDetails.getJSONArray("data");
+                for (int i = 0; i < userData.length(); i++) {
+                    JSONObject userDetail = userData.getJSONObject(i);
+                    String fName = userDetail.getString("fname");
+                    String lName = userDetail.getString("lname");
+                    String name = fName + " " + lName;
+
+                    String email = userDetail.getString("email");
+                    String address = userDetail.getString("address");
+                    String contact = userDetail.getString("mobile");
+
+                    mNameEditText.setText(name);
+                    mAddressEditText.setText(address);
+                    mEmailEditText.setText(email);
+                    mContactEditText.setText(contact);
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            mGetDetailsTask = null;
+        }
+    }
+
+
+    /**
+     *
+     */
     public class EditDetailsTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -314,10 +458,10 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putString("name", mNameToBeSent);
-//        outState.putString("address", mAddressToBeSent);
-//        outState.putString("contact", mContactToBeSent);
-//        outState.putString("email", mEmailToBeSent);
+        outState.putString("name", mNameToBeSent);
+        outState.putString("address", mAddressToBeSent);
+        outState.putString("contact", mContactToBeSent);
+        outState.putString("email", mEmailToBeSent);
     }
 
     @Override

@@ -51,6 +51,9 @@ public class PatientListAdapter extends BaseAdapter {
             holder.mPatientId = (TextView) convertView.findViewById(R.id.patient_id);
             holder.mPatientName = (TextView) convertView.findViewById(R.id.patient_name);
             holder.mPatientAge = (TextView) convertView.findViewById(R.id.patient_age);
+            holder.mPatientAddress = (TextView) convertView.findViewById(R.id.patient_address);
+            holder.mPatientGender = (TextView) convertView.findViewById(R.id.patient_gender);
+            holder.mPatientContact = (TextView) convertView.findViewById(R.id.patient_contact);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -59,6 +62,9 @@ public class PatientListAdapter extends BaseAdapter {
         holder.mPatientId.setText(patient.getPatientId());
         holder.mPatientName.setText(patient.getPatientName());
         holder.mPatientAge.setText(patient.getPatientAge());
+        holder.mPatientAddress.setText(patient.getPatientAddress());
+        holder.mPatientGender.setText(patient.getPatientGender());
+        holder.mPatientContact.setText(patient.getPatientContact());
         return convertView;
     }
 
@@ -66,5 +72,8 @@ public class PatientListAdapter extends BaseAdapter {
         TextView mPatientId;
         TextView mPatientName;
         TextView mPatientAge;
+        TextView mPatientAddress;
+        TextView mPatientGender;
+        TextView mPatientContact;
     }
 }

@@ -15,8 +15,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.shardulpathak.shp_doctor.DummyContent;
 import com.example.shardulpathak.shp_doctor.IFragmentCommunicator;
@@ -29,16 +31,12 @@ import com.example.shardulpathak.shp_doctor.view_patient.PatientFragment;
 public class DetailsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IFragmentCommunicator {
 
-    private boolean mIsInSession;
 
+    private static final String TAG = DetailsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsInSession = getIntent().getBooleanExtra("sessionFlag", false);
-//        if (!mIsInSession) {
-//            goToLoginActivity();
-//        }
         openActivityWithEditableDetails();
         setContentView(R.layout.activity_details);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -103,15 +101,28 @@ public class DetailsActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id) {
+            case R.id.nav_details:
+                openActivityWithEditableDetails();
+                break;
 
-        if (id == R.id.nav_details) {
-            openActivityWithEditableDetails();
-        } else if (id == R.id.nav_disease) {
-            openDiseaseFragment();
-        } else if (id == R.id.nav_patient) {
-            openPatientFragment();
-        } else if (id == R.id.nav_logout) {
-            attemptLogout();
+            case R.id.nav_disease:
+                openDiseaseFragment();
+                break;
+
+            case R.id.nav_patient:
+                openPatientFragment();
+                break;
+
+            case R.id.nav_appointment:
+                openAppointmentFragment();
+
+            case R.id.nav_logout:
+                attemptLogout();
+                break;
+
+            default:
+                Log.d(TAG, "Illegal argument for nav drawer item selection");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -120,19 +131,20 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     /**
+     *
+     */
+    private void openAppointmentFragment() {
+        Toast.makeText(getBaseContext(), "Appointments option selected", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
      * Logout of the app
      */
     private void attemptLogout() {
 //TODO check if the user is in session and that it is the user that logged in
-        if (checkInSession()) {
-            showLogoutDialog();
-        }
-        mIsInSession = false;
+        showLogoutDialog();
     }
 
-    private boolean checkInSession() {
-        return mIsInSession;
-    }
 
     /**
      * Displays logout dialog to user
@@ -161,7 +173,7 @@ public class DetailsActivity extends AppCompatActivity
 
     private void goToLoginActivity() {
         Intent logoutIntent = new Intent(getBaseContext(), LoginActivity.class);
-        logoutIntent.putExtra("logoutFlag", mIsInSession);
+//        logoutIntent.putExtra("logoutFlag", mIsInSession);
         startActivity(logoutIntent);
     }
 

@@ -64,6 +64,7 @@
     <string name="nav_drawer_search_doctor">Search Doctor</string>
     <string name="nav_drawer_feedback">Feedback</string>
     <string name="nav_drawer_logout">Logout</string>
+    <string name="nav_drawer_appointments">My Appointments</string>
 
     <string name="submit_button">Done</string>
     <string name="name_hint">Name</string>
@@ -106,4 +107,21 @@
     <string name="edit_details_cancel_btn_text">Cancel</string>
     <string name="edit_details_submit_btn_text">Update</string>
     <string name="edit_details_edit_btn_text">Edit</string>
+
+
+    <!--shared preferences strings-->
+
+    <string name="preferencesFileKey">SHP Preferences</string>
+    <string name="pref_user_email_id_key">UserEmail</string>
+    <string name="pref_user_pswd_key">UserPassword</string>
+    <string name="pref_user_id_key">UserID</string>
+    <string name="pref_user_logged_in_status">login</string>
+
+    <!--shared preferences user details -->
+    <string name="detail_name">user_detail_name</string>
+    <string name="detail_contact">user_detail_contact</string>
+    <string name="detail_email">user_detail_email</string>
+    <string name="detail_address">user_detail_address</string>
+    <string name="details_saved_to_preferences_flag">details_saved</string>
+
 </resources>

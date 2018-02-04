@@ -16,6 +16,7 @@ import com.example.shardulpathak.shp_doctor.IFragmentCommunicator;
 import com.example.shardulpathak.shp_doctor.R;
 import com.example.shardulpathak.shp_doctor.view_disease.DiseaseFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +55,9 @@ public class PatientFragment extends Fragment {
     private String mPatientId;
     private String mPatientName;
     private String mPatientAge;
+    private String mPatientAddress;
+    private String mPatientGender;
+    private String mPatientContact;
 
     private IFragmentCommunicator mListener;
 
@@ -181,21 +185,20 @@ public class PatientFragment extends Fragment {
             mPatientListTask = null;
 
             Log.d("result::", result);
-            Toast.makeText(getActivity(), "Result obtained on view patient is: " + result, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "Result obtained on view patient is: " + result, Toast.LENGTH_SHORT).show();
 
             try {
                 JSONObject symptomSearchResults = new JSONObject(result);
                 String status = symptomSearchResults.getString("status");
-                String message = symptomSearchResults.getString("message");
 
-                if (status.contains("ok")) {
+                if (status.contains("success")) {
                     //replace with log
-                    Log.d("Get search results:", message);
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                    Log.d("Get search results:", status);
+                    Toast.makeText(getActivity(), status, Toast.LENGTH_LONG).show();
                 } else {
                     if (result.isEmpty() || status.contains("error"))
                         //replace with log
-                        Log.d("Get results failure:", message);
+                        Log.d("Get results failure:", status);
                     Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
                 }
 
@@ -204,33 +207,32 @@ public class PatientFragment extends Fragment {
                 e.printStackTrace();
             }
 
-//            try {
-//                JSONObject jsonObject = new JSONObject(result);
-//                ArrayList<String> localSymptoms = new ArrayList<>();
-//                JSONArray dataDiseaseArray = jsonObject.getJSONArray("data_deseases");
-//
-//                for (int i = 0; i < dataDiseaseArray.length(); i++) {
-//                    JSONObject diseaseInfo = dataDiseaseArray.getJSONObject(i);
-//                    mDiseaseID = diseaseInfo.getString("disease_id");
-//                    mDiseaseName = diseaseInfo.getString("disease_name");
-//                    mDiseaseType = diseaseInfo.getString("type");
-//
-//                    mDiseasesList.add(new Disease(mDiseaseID, mDiseaseName, mDiseaseType));
-//                    mViewDiseaseAdapter.notifyDataSetChanged();
-//
-//
-////                    Toast.makeText(getActivity(), "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".", Toast.LENGTH_SHORT).show();
-//                    Log.d(TAG, "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".");
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                ArrayList<String> localSymptoms = new ArrayList<>();
+                JSONArray dataPatientArray = jsonObject.getJSONArray("data");
 
-            mPatientId = "3";
-            mPatientName = "abc";
-            mPatientAge = "23";
-            mPatientsList.add(new Patient(mPatientId, mPatientName, mPatientAge));
-            mViewPatientAdapter.notifyDataSetChanged();
+                for (int i = 0; i < dataPatientArray.length(); i++) {
+                    JSONObject patientInfo = dataPatientArray.getJSONObject(i);
+                    mPatientId = patientInfo.getString("user_id");
+                    String fname = patientInfo.getString("fname");
+                    String lname = patientInfo.getString("lname");
+                    mPatientName = fname + " " + lname;
+                    mPatientAge=patientInfo.getString("age");
+                    mPatientAddress = patientInfo.getString("address");
+                    mPatientGender = patientInfo.getString("gender");
+                    mPatientContact = patientInfo.getString("mobile");
+
+                    mPatientsList.add(new Patient(mPatientId, mPatientName, mPatientAge, mPatientAddress, mPatientGender, mPatientContact));
+                    mViewPatientAdapter.notifyDataSetChanged();
+
+
+//                    Toast.makeText(getActivity(), "Disease details are: " + mDiseaseID + ", " + mDiseaseName + ", " + mDiseaseType + ".", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Disease details are: " + mPatientId + ", " + mPatientName + ", " + mPatientAge + ".");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

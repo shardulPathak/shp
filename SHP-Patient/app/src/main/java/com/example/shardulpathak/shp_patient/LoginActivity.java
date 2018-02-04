@@ -65,9 +65,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-
     private static final String TAG = LoginActivity.class.getSimpleName();
     private boolean exit;
+
+    private String mUser_id;
+
+    PreferencesManagement mPreferencesManagement;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -123,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     /**
@@ -240,6 +244,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute();
+
         }
     }
 
@@ -463,19 +468,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 String status = jsonObject.getString("status");
                 String message = jsonObject.getString("message");
+                JSONObject userObject = jsonObject.getJSONObject("user");
+                mUser_id = userObject.getString("user_id");
+
+                storeDataInPreferences(result, mUser_id);
 
                 if (status.contains("success")) {
-                    //replace with log
-//                Toast.makeText(LoginActivity.this, result, Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Login successful with message: " + message);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
                     finish();
                     goToDetailsActivity();
                 } else {
                     if (result.isEmpty() || status.contains("error"))
-                        //replace with log
-                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-//                Toast.makeText(LoginActivity.this, getString(R.string.error_incorrect_credentials), Toast.LENGTH_LONG).show();
-//                mPasswordView.requestFocus();
+                        Log.d(TAG, "Login failure with message: " + message);
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -487,6 +493,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    /**
+     * @param result
+     * @param userID
+     */
+    private void storeDataInPreferences(String result, String userID) throws JSONException {
+        JSONObject userDetails = new JSONObject(result);
+        JSONObject user = userDetails.getJSONObject("user");
+        String userEmail = user.getString("email");
+        mPreferencesManagement.putDataInPreferences(this, getString(R.string.pref_user_email_id_key), userEmail);
+        mPreferencesManagement.putDataInPreferences(this, getString(R.string.pref_user_id_key), userID);
     }
 
 

@@ -34,7 +34,7 @@
     <string name="title_view_disease">View Disease</string>
     <string name="title_view_patient">View Patient</string>
     <string name="title_logout">Logout</string>
-
+    <string name="title_appointments">My Appointments</string>
 
     <!--Strings related to Logout dialog-->
 
@@ -57,7 +57,26 @@
     <string name="disease_cell_name_tv">Disease Name</string>
     <string name="disease_cell_id_tv">Disease ID:</string>
     <string name="view_disease_tv_text">View Diseases</string>
+    <string name="view_patient_tv_text">View Patients</string>
     <string name="patient_cell_id_tv">Patient ID:</string>
     <string name="patient_cell_name_tv">Patient Name:</string>
     <string name="patient_cell_age_tv">Patient Age:</string>
+    <string name="patient_cell_contact_tv">Patient Contact:</string>
+    <string name="patient_cell_address_tv">Patient Address:</string>
+    <string name="patient_cell_gender_tv">Patient Gender:</string>
+
+    <!--shared preferences strings-->
+    <string name="preferencesFileKey">SHP Preferences</string>
+    <string name="pref_user_email_id_key">UserEmail</string>
+    <string name="pref_user_pswd_key">UserPassword</string>
+    <string name="pref_user_id_key">UserID</string>
+    <string name="pref_user_logged_in_status">login</string>
+
+    <!--shared preferences user details -->
+    <string name="detail_name">user_detail_name</string>
+    <string name="detail_contact">user_detail_contact</string>
+    <string name="detail_email">user_detail_email</string>
+    <string name="detail_address">user_detail_address</string>
+    <string name="details_saved_to_preferences_flag">details_saved</string>
+
 </resources>

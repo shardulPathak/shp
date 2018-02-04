@@ -15,8 +15,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.shardulpathak.shp_doctor.IFragmentCommunicator;
+import com.example.shardulpathak.shp_doctor.PreferencesManagement;
 import com.example.shardulpathak.shp_doctor.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,6 +68,8 @@ public class DetailsFragment extends Fragment {
 
 
     private EditDetailsTask mEditDetailsTask = null;
+    private GetDetailsTask mGetDetailsTask = null;
+    private PreferencesManagement mPreferencesManagement;
 
 
     public DetailsFragment() {
@@ -91,6 +95,10 @@ public class DetailsFragment extends Fragment {
 
         getActivity().setTitle(R.string.title_details_fragment);
         setRetainInstance(true);
+
+        mGetDetailsTask = new GetDetailsTask();
+        mGetDetailsTask.execute();
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     @Override
@@ -155,7 +163,6 @@ public class DetailsFragment extends Fragment {
             Log.d(TAG, "Inside if, the Async task object is not null. Returning....");
             return;
         }
-
         Log.d(TAG, "Calling the Async task for editing the doctor details");
         mEditDetailsTask = new EditDetailsTask();
         mEditDetailsTask.execute();
@@ -178,7 +185,6 @@ public class DetailsFragment extends Fragment {
     }
 
     private void makeViewEditable() {
-
         mNameEditText.setEnabled(true);
         mAddressEditText.setEnabled(true);
         mContactEditText.setEnabled(true);
@@ -212,7 +218,6 @@ public class DetailsFragment extends Fragment {
 
 
     public class EditDetailsTask extends AsyncTask<String, Void, String> {
-
         @Override
         protected String doInBackground(String... params) {
 
@@ -301,6 +306,106 @@ public class DetailsFragment extends Fragment {
         protected void onCancelled() {
             super.onCancelled();
             mEditDetailsTask = null;
+        }
+    }
+
+
+    public class GetDetailsTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Log.d(TAG, "Inside doInBackground(" + params + ")");
+            try {
+
+                String userId = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key));
+                String getDetailsURL = "http://skillab.in/medical_beta/main/getDocterListAPI";
+                URL url = new URL(getDetailsURL);
+                JSONObject postDataParams = new JSONObject();
+
+                postDataParams.put("user_id", userId);
+
+                Log.e("params", postDataParams.toString());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                Log.d(TAG, "All connection parameters setting done.");
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        Log.d(TAG, line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                } else {
+                    return "false : " + responseCode;
+                }
+            } catch (IOException | JSONException e) {
+                return "Exception ::" + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            Log.d(TAG, "Inside onPostExecute(" + result + ")");
+            super.onPostExecute(result);
+            mGetDetailsTask = null;
+
+            Log.d("result::", result);
+//            Toast.makeText(getActivity(), "Result obtained on get details is: " + result, Toast.LENGTH_SHORT).show();
+
+            try {
+                JSONObject getUserDetails = new JSONObject(result);
+                String status = getUserDetails.getString("status");
+                Toast.makeText(getContext(), status, Toast.LENGTH_SHORT).show();
+
+                JSONArray userData = getUserDetails.getJSONArray("data");
+                for (int i = 0; i < userData.length(); i++) {
+                    JSONObject userDetail = userData.getJSONObject(i);
+                    String fName = userDetail.getString("fname");
+                    String lName = userDetail.getString("lname");
+                    String name = fName + " " + lName;
+
+                    String email = userDetail.getString("email");
+                    String address = userDetail.getString("address");
+                    String contact = userDetail.getString("mobile");
+
+                    mNameEditText.setText(name);
+                    mAddressEditText.setText(address);
+                    mEmailEditText.setText(email);
+                    mContactEditText.setText(contact);
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            mGetDetailsTask = null;
         }
     }
 

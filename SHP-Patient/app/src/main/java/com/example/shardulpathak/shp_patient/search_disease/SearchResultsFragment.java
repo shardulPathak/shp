@@ -234,7 +234,7 @@ public class SearchResultsFragment extends Fragment {
                     mDiseaseName = diseaseInfo.getString("disease_name");
                     mDiseaseType = diseaseInfo.getString("type");
 
-                    mDiseaseDetailsArrayList.add(new DiseaseDetails(mDiseaseID, mDiseaseName, mDiseaseType));
+                    mDiseaseDetailsArrayList.add(new DiseaseDetails("1", "abcd", "heart"));
                     mDiseaseListAdapter.notifyDataSetChanged();
 
 

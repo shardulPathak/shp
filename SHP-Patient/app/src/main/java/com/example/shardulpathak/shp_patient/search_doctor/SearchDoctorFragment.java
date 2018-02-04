@@ -134,17 +134,14 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             }
         });
         addSearchResultsToList();
-
     }
 
     private void attemptDoctorSearch() {
-
         Log.d(TAG, "Inside attemptDoctorSearch()");
         if (mAuthTask != null) {
             Log.d(TAG, "Inside if, the Async task object is not null. Returning....");
             return;
         }
-
         Log.d(TAG, "Calling the Async task for fetching other symptoms list");
         mAuthTask = new GetDoctorSearchResultsTask();
         mAuthTask.execute();
@@ -152,7 +149,6 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
 
 
     private void addSearchResultsToList() {
-
     }
 
     private void addOptionsToList() {
@@ -208,7 +204,6 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
                 URL url = new URL(getOtherSymptomsURL);
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put(mSelectedOption, mSearchQuery);
-//                postDataParams.put("password", mPassword);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -252,12 +247,22 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             Log.d(TAG, "Inside onPostExecute(" + result + ")");
             super.onPostExecute(result);
             mAuthTask = null;
-            Toast.makeText(getActivity(), "result received is :" + result, Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), "result received is :" + result, Toast.LENGTH_LONG).show();
             Log.d("result::", result);
 
             try {
                 JSONObject getDoctorDetailsResult = new JSONObject(result);
-                JSONArray doctorListArray = getDoctorDetailsResult.getJSONArray("data_doctors");
+                String status = getDoctorDetailsResult.getString("status");
+                if (status.contains("success")) {
+                    Log.d("Get Symptoms result: ", status);
+                    Toast.makeText(getActivity(), status, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        Log.d("Get Symptoms failure : ", status);
+                    Toast.makeText(getActivity(), status, Toast.LENGTH_LONG).show();
+                }
+
+                JSONArray doctorListArray = getDoctorDetailsResult.getJSONArray("data");
                 for (int i = 0; i < doctorListArray.length(); i++) {
                     JSONObject doctorDetails = doctorListArray.getJSONObject(i);
                     mDoctorID = doctorDetails.getString("user_id");
@@ -270,24 +275,13 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
                     mDocAddress = doctorDetails.getString("address");
                     mDocCity = doctorDetails.getString("city");
                     mDocMobile = doctorDetails.getString("mobile");
-                    if (mDoctorDetailsArrayList != null) {
-                        mDoctorDetailsArrayList = new ArrayList<>();
-                    }
-                    mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
-                            mDocCity, mDocMobile, mDocHospitalName));
-                    mDoctorListAdapter.notifyDataSetChanged();
                 }
-//                String status = getSymptomsResults.getString("status");
-//                String message = getSymptomsResults.getString("message");
-//                if (status.contains("ok")) {
-//                    Log.d("Get Symptoms result: ", message);
-//                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-//                } else {
-//                    if (result.isEmpty() || status.contains("error"))
-//                        Log.d("Get Symptoms failure : ", message);
-//                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-//                }
-
+                if (mDoctorDetailsArrayList == null) {
+                    mDoctorDetailsArrayList = new ArrayList<>();
+                }
+                mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
+                        mDocCity, mDocMobile, mDocHospitalName));
+                mDoctorListAdapter.notifyDataSetChanged();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
+import com.example.shardulpathak.shp_patient.PreferencesManagement;
 import com.example.shardulpathak.shp_patient.R;
 
 import org.json.JSONException;
@@ -40,8 +41,11 @@ public class FeedbackFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-
+    PreferencesManagement mPreferencesManagement;
     private IFragmentCommunicator mListener;
+
+    private String mFeedback;
+    private final static String TAG = FeedbackFragment.class.getSimpleName();
 
     private SendFeedbackTask mAuthTask = null;
     EditText mFeedbackEditText;
@@ -57,6 +61,7 @@ public class FeedbackFragment extends Fragment {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.feedback_title);
         setRetainInstance(true);
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     @Override
@@ -74,14 +79,16 @@ public class FeedbackFragment extends Fragment {
         mSubmitFeedbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Submit feedback button clicked", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Submit feedback button clicked");
                 sendFeedbackToAdmin();
+                mFeedbackEditText.getText().clear();
             }
         });
 
     }
 
     private void sendFeedbackToAdmin() {
+        mFeedback = mFeedbackEditText.getText().toString();
         if (mAuthTask != null) {
             return;
         }
@@ -116,11 +123,12 @@ public class FeedbackFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                String loginURL = "http://skillab.in/medical_beta/catalog/user/member_login_api";
-                URL url = new URL(loginURL);
+                String userID = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key));
+                String patientFeedbackURL = "http://skillab.in/medical_beta/main/feedbackFormPostAPI";
+                URL url = new URL(patientFeedbackURL);
                 JSONObject postDataParams = new JSONObject();
-                postDataParams.put("username","" );
-//                postDataParams.put("password", );
+                postDataParams.put("user_id", userID);
+                postDataParams.put("message", mFeedback);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -170,7 +178,6 @@ public class FeedbackFragment extends Fragment {
             mAuthTask = null;
 
             Log.d("result::", result);
-
             try {
                 JSONObject jsonObject = new JSONObject(result);
 
@@ -178,8 +185,11 @@ public class FeedbackFragment extends Fragment {
                 String message = jsonObject.getString("message");
 
                 if (status.contains("success")) {
+                    Log.d(TAG, "Feedback submitted successfully with result :" + message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
                 } else if (result.isEmpty() || status.contains("error")) {
-
+                    Log.d(TAG, "Feedback submission failure with result :" + message);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -188,7 +198,6 @@ public class FeedbackFragment extends Fragment {
     }
 
     /**
-     *
      * @param params
      * @return
      * @throws JSONException
