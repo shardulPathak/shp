@@ -5,25 +5,25 @@
         <item
             android:id="@+id/nav_my_details"
             android:title="@string/nav_drawer_my_details"
-            android:icon="@drawable/ic_menu_camera"/>
+            android:icon="@drawable/my_details_nav_drawer"/>
 
         <item
             android:id="@+id/nav_search_doctor"
             android:title="@string/nav_drawer_search_doctor"
-            android:icon="@drawable/ic_menu_send"/>
+            android:icon="@drawable/search_doctor_nav_drawer" />
         <item
             android:id="@+id/nav_feedback"
             android:title="@string/nav_drawer_feedback"
-            android:icon="@drawable/ic_menu_manage"/>
+            android:icon="@drawable/feedback_nav_drawer"/>
 
         <item
             android:id="@+id/appointments"
             android:title="@string/nav_drawer_appointments"
-            android:icon="@drawable/ic_menu_camera"/>
+            android:icon="@drawable/my_appointments_nav_drawer"/>
 
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/logout_nav_drawer"
             android:title="@string/nav_drawer_logout" />
     </group>
 </menu>

@@ -95,7 +95,7 @@ public class DetailsFragment extends Fragment {
 
         getActivity().setTitle(R.string.title_details_fragment);
         setRetainInstance(true);
-
+        Toast.makeText(getActivity(), "Fetching the details", Toast.LENGTH_SHORT).show();
         mGetDetailsTask = new GetDetailsTask();
         mGetDetailsTask.execute();
         mPreferencesManagement = new PreferencesManagement();
@@ -315,9 +315,9 @@ public class DetailsFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
 
+
             Log.d(TAG, "Inside doInBackground(" + params + ")");
             try {
-
                 String userId = mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key));
                 String getDetailsURL = "http://skillab.in/medical_beta/main/getDocterListAPI";
                 URL url = new URL(getDetailsURL);

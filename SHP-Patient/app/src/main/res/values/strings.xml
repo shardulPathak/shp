@@ -66,6 +66,11 @@
     <string name="nav_drawer_logout">Logout</string>
     <string name="nav_drawer_appointments">My Appointments</string>
 
+    <!--user picture seection dialog strings-->
+    <string name="select_from_gallery">Select image from Gallery</string>
+    <string name="capture_from_camera">Capture a photo</string>
+    <string name="cancel">Cancel</string>
+
     <string name="submit_button">Done</string>
     <string name="name_hint">Name</string>
     <string name="register_patient_title">Register Patient</string>
@@ -123,5 +128,12 @@
     <string name="detail_email">user_detail_email</string>
     <string name="detail_address">user_detail_address</string>
     <string name="details_saved_to_preferences_flag">details_saved</string>
+    <string name="appointment_patient_name_tv">Patient Name:</string>
+    <string name="appointment_time_tv">Appointment Time:</string>
+    <string name="appointment_cell_date_tv">Appointment Date:</string>
+    <string name="appointment_cell_id_tv">Appointment ID:</string>
+    <string name="appointment_info">Your appointments can be seen here</string>
+    <string name="no_appcointments_view_text">No Appointments yet</string>
+    <string name="title_my_appointments">My Appointments</string>
 
 </resources>

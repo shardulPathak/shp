@@ -100,7 +100,7 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
 
     private void addItemsToList() {
         mSymptomSpinnerList = new ArrayList<>();
-        mSelectedSymptomsList=new ArrayList<>();
+        mSelectedSymptomsList = new ArrayList<>();
         mSymptomSpinnerList.add(getActivity().getString(R.string.search_disease_symptom_spinner_prompt));
         mSymptomSpinnerList.add("");
         mSymptomSpinnerList.add("");
@@ -163,14 +163,8 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Done button clicked");
-                Toast.makeText(getActivity(), "Done button clicked", Toast.LENGTH_SHORT).show();
                 //send all symptoms to api, get the disease and the doctors list
                 sendAllSymptomsToResultsFragment();
-
-                //TODO need to revisit this approach
-                SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
-                openFragment(searchResultsFragment);
-
             }
         });
 
@@ -187,7 +181,11 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     }
 
     private void sendAllSymptomsToResultsFragment() {
-
+        SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
+//        Bundle args = new Bundle();
+//        args.putStringArrayList("symptoms", (ArrayList<String>) mSelectedSymptomsList);
+//        searchResultsFragment.setArguments(args);
+        openFragment(searchResultsFragment);
     }
 
     private void sendAndGetOtherValues() {
@@ -207,11 +205,29 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        mSymptomSpinner.setSaveEnabled(true);
+        String currentSpinnerOption = mSelectedSymptom;
+        List<String> selectedSymptoms = mSelectedSymptomsList;
+        outState.putString("spinnerSelection", mSelectedSymptom);
+        outState.putStringArrayList("selectedSymptoms", (ArrayList<String>) mSelectedSymptomsList);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSelectedSymptomTextView.setText((CharSequence) savedInstanceState.getStringArrayList("selectedSymptoms"));
+//        savedInstanceState.getString("spinnerSelection");
+        }
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSelectedSymptomTextView.setText((CharSequence) savedInstanceState.getStringArrayList("selectedSymptoms"));
+//        savedInstanceState.getString("spinnerSelection");
+        }
     }
 
     public class GetSymptomsTask extends AsyncTask<String, Void, String> {
@@ -226,7 +242,6 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
                 URL url = new URL(getOtherSymptomsURL);
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("symtom", "Joint Pain");
-//                postDataParams.put("password", mPassword);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -377,17 +392,6 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
     }
 
     private void addToSelectedSymptoms(String symptom) {
-//        int marginLeft = mSelectedSymptomTextView.getLeft();
-//        int marginRight = mSelectedSymptomTextView.getRight();
-//        int marginTop = mSelectedSymptomTextView.getTop();
-//        int marginBottom = mSelectedSymptomTextView.getBottom();
-//        ChipView chipView = new ChipView(getActivity());
-//        chipView.setLabel(label);
-//        chipView.setLeft(marginLeft + 15);
-//        chipView.setRight(marginRight - 15);
-//        chipView.setTop(marginTop);
-//        chipView.setBottom(marginBottom);
-//        mSelectedSymptomTextView.addView(chipView);
         mSelectedSymptomsList.add(symptom);
         mSelectedSymptomTextView.append(", " + symptom);
     }

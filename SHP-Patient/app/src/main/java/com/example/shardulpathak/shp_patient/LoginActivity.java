@@ -21,6 +21,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -411,10 +412,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected String doInBackground(String... params) {
             try {
-                //"rahul@gmail.com"
-                //"123456"
-
-//                mHandler = new HttpHandler(mLoginURL);
                 String loginURL = "http://skillab.in/medical_beta/catalog/user/member_login_api";
                 URL url = new URL(loginURL);
                 JSONObject postDataParams = new JSONObject();
@@ -468,12 +465,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 String status = jsonObject.getString("status");
                 String message = jsonObject.getString("message");
-                JSONObject userObject = jsonObject.getJSONObject("user");
-                mUser_id = userObject.getString("user_id");
-
-                storeDataInPreferences(result, mUser_id);
 
                 if (status.contains("success")) {
+                    JSONObject userObject = jsonObject.getJSONObject("user");
+                    mUser_id = userObject.getString("user_id");
+                    storeDataInPreferences(result, mUser_id);
+
                     Log.d(TAG, "Login successful with message: " + message);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
                     finish();

@@ -1,30 +1,32 @@
-package com.example.shardulpathak.shp_patient.search_disease;
+package com.example.shardulpathak.shp_patient.search_doctor;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.R;
-import com.example.shardulpathak.shp_patient.search_doctor.SearchDoctorFragment;
+import com.example.shardulpathak.shp_patient.search_disease.DoctorDetails;
+import com.example.shardulpathak.shp_patient.search_disease.DoctorListAdapter;
 
 import java.util.ArrayList;
 
 
-public class DoctorListAdapter extends BaseAdapter {
+public class SearchDoctorListAdapter extends BaseAdapter {
 
     private Context mContext;
     private ArrayList<DoctorDetails> mDoctorDetailsList;
-    private SearchResultsFragment mFragment;
+    private SearchDoctorFragment mFragment;
 
-    public DoctorListAdapter(Context context, ArrayList<DoctorDetails> doctorDetailsList, SearchResultsFragment fragment) {
-        this.mContext = context;
-        this.mDoctorDetailsList = doctorDetailsList;
-        this.mFragment=fragment;
+    public SearchDoctorListAdapter(Context mContext, ArrayList<DoctorDetails> mDoctorDetailsList, SearchDoctorFragment mFragment) {
+        this.mContext = mContext;
+        this.mDoctorDetailsList = mDoctorDetailsList;
+        this.mFragment = mFragment;
     }
 
     @Override
@@ -32,10 +34,12 @@ public class DoctorListAdapter extends BaseAdapter {
         return mDoctorDetailsList.size();
     }
 
+
     @Override
     public Object getItem(int position) {
         return mDoctorDetailsList.get(position);
     }
+
 
     @Override
     public long getItemId(int position) {
@@ -44,7 +48,7 @@ public class DoctorListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         DoctorDetails doctorDetails = mDoctorDetailsList.get(position);
 
         if (convertView == null) {
@@ -59,12 +63,13 @@ public class DoctorListAdapter extends BaseAdapter {
             holder.mDocCity = (TextView) convertView.findViewById(R.id.doc_city);
             holder.mDocMobile = (TextView) convertView.findViewById(R.id.doc_mobile);
             holder.mDocHospitalName = (TextView) convertView.findViewById(R.id.doc_hospital_name);
-            Button appointmentButton=(Button)convertView.findViewById(R.id.book_appointment_btn);
+            Button appointmentButton = (Button) convertView.findViewById(R.id.book_appointment_btn);
             appointmentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mFragment instanceof SearchResultsFragment){
-                        mFragment.sendAppointmentRequestToDoctor();
+                    Log.d(SearchDoctorListAdapter.class.getSimpleName(), "Button clicked");
+                    if (mFragment instanceof SearchDoctorFragment) {
+                        mFragment.sendAppointmentRequestToDoctor(holder.mDoctorID.getText().toString());
                     }
                 }
             });
@@ -82,9 +87,6 @@ public class DoctorListAdapter extends BaseAdapter {
         holder.mDocMobile.setText(doctorDetails.getDocMobile());
         holder.mDocHospitalName.setText(doctorDetails.getDocHospitalName());
         return convertView;
-    }
-
-    private void sendAppointmentRequestToDoctor() {
     }
 
     static class ViewHolder {

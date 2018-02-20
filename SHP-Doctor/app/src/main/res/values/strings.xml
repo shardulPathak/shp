@@ -36,6 +36,12 @@
     <string name="title_logout">Logout</string>
     <string name="title_appointments">My Appointments</string>
 
+    <!--Strings related to the appointment feature-->
+    <string name="title_my_appointments">My Appointments</string>
+    <string name="appointment_info">Your appointments can be seen here</string>
+
+
+
     <!--Strings related to Logout dialog-->
 
     <string name="dialog_yes_button_text">Yes</string>
@@ -78,5 +84,10 @@
     <string name="detail_email">user_detail_email</string>
     <string name="detail_address">user_detail_address</string>
     <string name="details_saved_to_preferences_flag">details_saved</string>
+    <string name="no_appointments_view_text">No Appointments yet</string>
+    <string name="appointment_cell_id_tv">Appointment ID:</string>
+    <string name="appointment_cell_date_tv">Appointment Date:</string>
+    <string name="appointment_time_tv">Appointment Time:</string>
+    <string name="appointment_patient_name_tv">Appointment Patient Name:</string>
 
 </resources>

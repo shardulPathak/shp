@@ -44,8 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5sp"
             android:layout_marginStart="5sp"
+            android:ems="1000"
             android:hint="@string/patient_mail_hint"
             android:inputType="textEmailAddress"
+            android:maxLength="1000"
             android:textSize="15sp" />
     </android.support.design.widget.TextInputLayout>
 

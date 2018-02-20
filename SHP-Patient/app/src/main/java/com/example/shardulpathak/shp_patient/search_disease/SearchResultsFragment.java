@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
 import com.example.shardulpathak.shp_patient.R;
 
 import org.json.JSONArray;
@@ -33,18 +34,8 @@ import java.util.Iterator;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SearchResultsFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class SearchResultsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private TextView mDiseaseListTextView;
     private TextView mDoctorListTextView;
@@ -55,6 +46,7 @@ public class SearchResultsFragment extends Fragment {
     private ArrayList<DiseaseDetails> mDiseaseDetailsArrayList;
     private DoctorListAdapter mDoctorListAdapter;
     private ArrayList<DoctorDetails> mDoctorDetailsArrayList;
+    ArrayList<String> mSelectedSymptomsList;
 
 
     String mDiseaseID;
@@ -75,36 +67,22 @@ public class SearchResultsFragment extends Fragment {
 
 
     private GetDiseaseAndDoctorTask mDiseaseListTask = null;
+    private IFragmentCommunicator mListener;
 
     public SearchResultsFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SearchResultsFragment.
+     * @param listener
      */
-    // TODO: Rename and change types and number of parameters
-    public static SearchResultsFragment newInstance(String param1, String param2) {
-        SearchResultsFragment fragment = new SearchResultsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public void setListener(IFragmentCommunicator listener) {
+        this.mListener = listener;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setRetainInstance(true);
     }
 
@@ -113,6 +91,7 @@ public class SearchResultsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
+//        mSelectedSymptomsList = getArguments().getStringArrayList("symptoms");
         getDiseaseAndDoctorData();
         initView(view);
         getActivity().setTitle(getString(R.string.search_disease_results_activity_title));
@@ -137,8 +116,14 @@ public class SearchResultsFragment extends Fragment {
         Log.d(TAG, "Calling the Async task for fetching disease and doctor list.");
         mDiseaseListTask = new GetDiseaseAndDoctorTask();
         mDiseaseListTask.execute();
+    }
 
 
+    /**
+     * @return
+     */
+    public boolean shouldGoBack() {
+        return true;
     }
 
     public class GetDiseaseAndDoctorTask extends AsyncTask<String, Void, String> {
@@ -153,7 +138,7 @@ public class SearchResultsFragment extends Fragment {
                 URL url = new URL(getDiseaseAndDoctorListURL);
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("symtoms", "'Joint Pain','cold'");
-//                postDataParams.put("password", mPassword);
+//                postDataParams.put("symtoms", mSelectedSymptomsList);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -305,8 +290,14 @@ public class SearchResultsFragment extends Fragment {
 
         mDoctorListTextView = (TextView) view.findViewById(R.id.doctor_list_tv);
         mDoctorListView = (ListView) view.findViewById(R.id.doctor_list);
-        mDoctorListAdapter = new DoctorListAdapter(getContext(), mDoctorDetailsArrayList);
+        mDoctorListAdapter = new DoctorListAdapter(getContext(), mDoctorDetailsArrayList, SearchResultsFragment.this);
         mDoctorListView.setAdapter(mDoctorListAdapter);
     }
 
+    /**
+     *
+     */
+    public void sendAppointmentRequestToDoctor() {
+
+    }
 }

@@ -115,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(mAge)) {
+        if (TextUtils.isEmpty(mAge)||mAge.equals("")) {
             mAgeEditText.setError("The age field is empty");
             focusView = mAgeEditText;
             cancel = true;
@@ -156,6 +156,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isUserAgeValid(String age) {
+        if (age.equals("")){
+            mAgeEditText.setError("The age field is empty");
+            return false;
+        }
         return age.length() <= 3 && Integer.parseInt(age) <= 100;
     }
 

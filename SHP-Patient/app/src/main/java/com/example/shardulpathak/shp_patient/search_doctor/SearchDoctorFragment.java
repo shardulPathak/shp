@@ -19,9 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
+import com.example.shardulpathak.shp_patient.PreferencesManagement;
 import com.example.shardulpathak.shp_patient.R;
 import com.example.shardulpathak.shp_patient.search_disease.DoctorDetails;
-import com.example.shardulpathak.shp_patient.search_disease.DoctorListAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,14 +66,18 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
     Button mSearchDoctorButton;
     ListView mSearchResultsList;
 
-    private DoctorListAdapter mDoctorListAdapter;
+    private SearchDoctorListAdapter mDoctorListAdapter;
 
     private List<String> mDoctorSearchOptions;
     private ArrayList<DoctorDetails> mDoctorDetailsArrayList;
     private String mSelectedOption;
 
+    private String mAppointmentDoctorID;
+    private PreferencesManagement mPreferencesManagement;
+
 
     private GetDoctorSearchResultsTask mAuthTask = null;
+    private RequestAppointmentTask mRequestAppointmentTask = null;
 
     private String mDoctorID;
     private String mDoctorEmail;
@@ -93,6 +97,7 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.search_doctor_title);
         setRetainInstance(true);
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     @Override
@@ -122,7 +127,7 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
 
         mDoctorDetailsArrayList = new ArrayList<>();
         mSearchResultsList = (ListView) v.findViewById(R.id.search_doc_results_list);
-        mDoctorListAdapter = new DoctorListAdapter(getContext(), mDoctorDetailsArrayList);
+        mDoctorListAdapter = new SearchDoctorListAdapter(getContext(), mDoctorDetailsArrayList, SearchDoctorFragment.this);
         mSearchResultsList.setAdapter(mDoctorListAdapter);
 
         mSearchDoctorButton = (Button) v.findViewById(R.id.search_doc_submit_btn);
@@ -192,7 +197,6 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
 
 
     public class GetDoctorSearchResultsTask extends AsyncTask<String, Void, String> {
-
 
         @Override
         protected String doInBackground(String... params) {
@@ -292,26 +296,147 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
             super.onCancelled();
             mAuthTask = null;
         }
+    }
 
-        public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
-            StringBuilder result = new StringBuilder();
-            boolean first = true;
+    /**
+     * @param params
+     * @return
+     * @throws JSONException
+     * @throws UnsupportedEncodingException
+     */
+    public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
 
-            Iterator<String> itr = params.keys();
-            while (itr.hasNext()) {
-                String key = itr.next();
-                Object value = params.get(key);
-                if (first) {
-                    first = false;
-                } else {
-                    result.append("&");
-                }
-                result.append(URLEncoder.encode(key, "UTF-8"));
-                result.append("=");
-                result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        Iterator<String> itr = params.keys();
+        while (itr.hasNext()) {
+            String key = itr.next();
+            Object value = params.get(key);
+            if (first) {
+                first = false;
+            } else {
+                result.append("&");
             }
-            return result.toString();
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
+        return result.toString();
+    }
+
+
+    public void sendAppointmentRequestToDoctor(String doctorID) {
+        mAppointmentDoctorID = doctorID;
+        if (mRequestAppointmentTask == null) {
+            mRequestAppointmentTask = new RequestAppointmentTask();
+            mRequestAppointmentTask.execute();
+        }
+    }
+
+    /**
+     *
+     */
+    public class RequestAppointmentTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            Log.d(TAG, "Inside doInBackground(" + params + ")");
+            try {
+
+                String getOtherSymptomsURL = "http://skillab.in/medical_beta/main/make_appoinment_by_patient";
+                URL url = new URL(getOtherSymptomsURL);
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("patient_id", mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key)));
+                postDataParams.put("doctor_id", mAppointmentDoctorID);
+                postDataParams.put("message_by_patient", "request");
+                Log.e("params", postDataParams.toString());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                Log.d(TAG, "All connection parameters setting done.");
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        Log.d(TAG, line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                } else {
+                    return "false : " + responseCode;
+                }
+            } catch (IOException | JSONException e) {
+                return "Exception ::" + e.getMessage();
+            }
         }
 
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, "Inside onPostExecute(" + result + ")");
+            super.onPostExecute(result);
+            mRequestAppointmentTask = null;
+//            Toast.makeText(getActivity(), "result received is :" + result, Toast.LENGTH_LONG).show();
+            Log.d("result::", result);
+
+            try {
+                JSONObject getDoctorDetailsResult = new JSONObject(result);
+                String status = getDoctorDetailsResult.getString("status");
+                String message = getDoctorDetailsResult.getString("message");
+                if (status.contains("success")) {
+                    Log.d("Get Symptoms result: ", status);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        Log.d("Get Symptoms failure : ", status);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                }
+//
+//            JSONArray doctorListArray = getDoctorDetailsResult.getJSONArray("data");
+//            for (int i = 0; i < doctorListArray.length(); i++) {
+//                JSONObject doctorDetails = doctorListArray.getJSONObject(i);
+//                mDoctorID = doctorDetails.getString("user_id");
+//                String docFirstName = doctorDetails.getString("fname");
+//                String docLastName = doctorDetails.getString("lname");
+//                mDocFullName = docFirstName + " " + docLastName;
+//                mDoctorEmail = doctorDetails.getString("email");
+//                mDocHospitalName = doctorDetails.getString("s_name");
+//                mDocCategory = doctorDetails.getString("category");
+//                mDocAddress = doctorDetails.getString("address");
+//                mDocCity = doctorDetails.getString("city");
+//                mDocMobile = doctorDetails.getString("mobile");
+//            }
+//            if (mDoctorDetailsArrayList == null) {
+//                mDoctorDetailsArrayList = new ArrayList<>();
+//            }
+//            mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
+//                    mDocCity, mDocMobile, mDocHospitalName));
+//            mDoctorListAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+            @Override
+            protected void onCancelled () {
+                super.onCancelled();
+                mRequestAppointmentTask = null;
+            }
+        }
     }
-}

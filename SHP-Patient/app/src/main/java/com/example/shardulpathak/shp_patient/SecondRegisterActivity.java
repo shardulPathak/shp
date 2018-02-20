@@ -286,6 +286,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
             Log.d("result::", result);
 
             try {
+
                 JSONObject registrationResult = new JSONObject(result);
 
                 String status = registrationResult.getString("status");

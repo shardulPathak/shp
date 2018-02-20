@@ -426,19 +426,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 JSONObject loginResult = new JSONObject(result);
                 String status = loginResult.getString("status");
                 String message = loginResult.getString("message");
-                JSONObject userObject = loginResult.getJSONObject("user");
-                mUser_id = userObject.getString("user_id");
-
-                storeDataInPreferences(result, mUser_id);
                 if (status.contains("success")) {
+                    JSONObject userObject = loginResult.getJSONObject("user");
+                    mUser_id = userObject.getString("user_id");
+                    storeDataInPreferences(result, mUser_id);
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     Log.d("connected", "Connection successful");
                     mIsInSession = true;
                     navigateToDetailsActivity();
                 } else if (result.contains("error")) {
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    mPasswordView.requestFocus();
-//                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
                     mIsInSession = false;
                 }
             } catch (JSONException e) {
