@@ -73,7 +73,7 @@ public class SearchResultsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
+    /**Set listener
      * @param listener
      */
     public void setListener(IFragmentCommunicator listener) {
@@ -99,6 +99,9 @@ public class SearchResultsFragment extends Fragment {
 
     }
 
+    /**
+     * Gets the disease and doctor data
+     */
     private void getDiseaseAndDoctorData() {
         Log.d(TAG, "Inside getDiseaseAndDoctorData()");
         if (mDiseaseListTask != null) {
@@ -120,12 +123,16 @@ public class SearchResultsFragment extends Fragment {
 
 
     /**
+     * Retuns true if the application should support going back
      * @return
      */
     public boolean shouldGoBack() {
         return true;
     }
 
+    /**
+     * Asynctask to get disease and doctor details
+     */
     public class GetDiseaseAndDoctorTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -202,8 +209,6 @@ public class SearchResultsFragment extends Fragment {
                         Log.d("Get results failure:", message);
                     Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
                 }
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -261,6 +266,13 @@ public class SearchResultsFragment extends Fragment {
         }
     }
 
+    /**
+     * Get the string for data to be posted to writer
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
+     */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
@@ -281,6 +293,10 @@ public class SearchResultsFragment extends Fragment {
         return result.toString();
     }
 
+    /**
+     * Initialize view
+     * @param view view to be initialized
+     */
     private void initView(View view) {
         mDiseaseListTextView = (TextView) view.findViewById(R.id.disease_list_tv);
 

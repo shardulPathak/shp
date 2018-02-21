@@ -1,6 +1,8 @@
 package com.example.shardulpathak.shp_patient.appointments;
 
-
+/**
+ * Appointment details
+ */
 public class Appointment {
 
     private String mAppointmentID;

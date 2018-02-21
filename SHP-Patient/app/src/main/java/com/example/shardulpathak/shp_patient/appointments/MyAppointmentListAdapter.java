@@ -13,6 +13,9 @@ import com.example.shardulpathak.shp_patient.R;
 
 import java.util.List;
 
+/**
+ * Adapter for appointment list
+ */
 public class MyAppointmentListAdapter extends BaseAdapter {
 
 

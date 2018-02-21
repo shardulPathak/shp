@@ -76,6 +76,9 @@ public class MyAppointmentsFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    /**
+     * Checks if the appointment results are there
+     */
     private void checkForAppointmentResults() {
         if (mAppointmentStatusTask == null) {
             mAppointmentStatusTask = new AppointmentStatusTask();
@@ -94,6 +97,10 @@ public class MyAppointmentsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initializes view
+     * @param view view to be initialized
+     */
     private void initView(View view) {
         mAppointmentInfoView = (TextView) view.findViewById(R.id.appointment_info_header);
         mNoAppointmentsView = (TextView) view.findViewById(R.id.no_appointment_view);
@@ -121,7 +128,7 @@ public class MyAppointmentsFragment extends Fragment {
     }
 
     /**
-     *
+     *Asynctask to get the appointment status task
      */
     public class AppointmentStatusTask extends AsyncTask<String, Void, String> {
         @Override
@@ -244,6 +251,11 @@ public class MyAppointmentsFragment extends Fragment {
         return result.toString();
     }
 
+    /**
+     * Set patient response fields
+     * @param isAccepted
+     * @param respondedAppointmentID
+     */
     public void sendPatientResponse(boolean isAccepted, String respondedAppointmentID) {
         if (isAccepted) {
             mIsAccepted = 1;
