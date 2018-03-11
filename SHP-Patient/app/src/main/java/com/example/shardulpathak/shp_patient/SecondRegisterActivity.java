@@ -39,6 +39,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
 
     String mId;
     String mName;
+    String mLastName;
     String mAge;
     String mAddress;
     String mGender;
@@ -168,6 +169,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
         Intent receiveRegistrationValuesIntent = getIntent();
         mId = receiveRegistrationValuesIntent.getStringExtra("userId");
         mName = receiveRegistrationValuesIntent.getStringExtra("userName");
+        mLastName=receiveRegistrationValuesIntent.getStringExtra("userLastName");
         mAge = receiveRegistrationValuesIntent.getStringExtra("userAge");
         mAddress = receiveRegistrationValuesIntent.getStringExtra("userAddress");
         mGender = receiveRegistrationValuesIntent.getStringExtra("userGender");
@@ -191,6 +193,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
         mValueMap = new HashMap<>();
         mValueMap.put("id", mId);
         mValueMap.put("name", mName);
+        mValueMap.put("lastname",mLastName);
         mValueMap.put("age", mAge);
         mValueMap.put("address", mAddress);
         mValueMap.put("gender", mGender);
@@ -233,6 +236,7 @@ public class SecondRegisterActivity extends AppCompatActivity {
                 postDataParams.put("password", mMap.get("password"));
                 postDataParams.put("confirm_password", mMap.get("confirmpassword"));
                 postDataParams.put("fname", mMap.get("name"));
+                postDataParams.put("lname", mMap.get("lastname"));
                 postDataParams.put("age", mMap.get("age"));
                 postDataParams.put("email", mMap.get("email"));
                 postDataParams.put("gender", mMap.get("gender"));

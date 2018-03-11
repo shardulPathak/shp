@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -104,6 +103,9 @@ public class DetailsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * Gets the user email and name using asyncTask
+     */
     private void getEmailAndName() {
         mGetDetailsTask = new GetDetailsTask();
         mGetDetailsTask.execute();
@@ -114,7 +116,7 @@ public class DetailsActivity extends AppCompatActivity
      */
     private void navigateToSearchDisease() {
         mSearchDiseaseFragment = new SearchDiseaseFragment();
-        mSearchResultsFragment=new SearchResultsFragment();
+        mSearchResultsFragment = new SearchResultsFragment();
         mSearchResultsFragment.setListener(this);
         openSearchDiseaseFragment(mSearchDiseaseFragment);
     }
@@ -138,7 +140,7 @@ public class DetailsActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (mSearchResultsFragment.shouldGoBack()) {
+            if (mSearchResultsFragment != null && mSearchResultsFragment.shouldGoBack()) {
                 openSearchDiseaseFragment(mSearchDiseaseFragment);
             } else {
                 //do nothing
@@ -154,6 +156,9 @@ public class DetailsActivity extends AppCompatActivity
         showLogoutDialog();
     }
 
+    /**
+     * Shows the logout dialog
+     */
     public void showLogoutDialog() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle(getText(R.string.logout_dialog_title));
@@ -234,7 +239,7 @@ public class DetailsActivity extends AppCompatActivity
                 break;
             case R.id.nav_search_doctor:
                 goToSearchDoctor();
-break;
+                break;
 
             case R.id.appointments:
                 goToAppointments();
@@ -265,7 +270,9 @@ break;
 
     }
 
-
+    /**
+     * AsyncTask to get the user details
+     */
     public class GetDetailsTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -374,6 +381,12 @@ break;
         }
     }
 
+    /**
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException                thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
+     */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;

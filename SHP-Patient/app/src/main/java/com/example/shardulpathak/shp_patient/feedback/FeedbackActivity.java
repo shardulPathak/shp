@@ -1,7 +1,5 @@
 package com.example.shardulpathak.shp_patient.feedback;
 
-import android.support.design.widget.NavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.shardulpathak.shp_patient.IBaseActivity;

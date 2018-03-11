@@ -44,7 +44,7 @@ public class DoctorListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         DoctorDetails doctorDetails = mDoctorDetailsList.get(position);
 
         if (convertView == null) {
@@ -64,7 +64,7 @@ public class DoctorListAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     if (mFragment instanceof SearchResultsFragment){
-                        mFragment.sendAppointmentRequestToDoctor();
+                        mFragment.sendAppointmentRequestToDoctor(holder.mDoctorID.getText().toString());
                     }
                 }
             });

@@ -55,6 +55,8 @@ public class MyAppointmentsFragment extends Fragment {
     private String mAppointmentID;
     private String mDoctorID;
     private String mPatientID;
+
+
     private String mPatientMessage;
     private String mDoctorMessage;
 

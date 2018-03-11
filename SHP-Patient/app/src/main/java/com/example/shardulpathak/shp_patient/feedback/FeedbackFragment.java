@@ -73,6 +73,10 @@ public class FeedbackFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initializes view for the fragment
+     * @param view view to be initialized
+     */
     private void initView(View view) {
         mFeedbackEditText = (EditText) view.findViewById(R.id.feedback_edit_text);
         mSubmitFeedbackButton = (Button) view.findViewById(R.id.submit_feedback_button);
@@ -87,6 +91,9 @@ public class FeedbackFragment extends Fragment {
 
     }
 
+    /**
+     * Sends feedback to the admin using asyncTask
+     */
     private void sendFeedbackToAdmin() {
         mFeedback = mFeedbackEditText.getText().toString();
         if (mAuthTask != null) {
@@ -116,7 +123,7 @@ public class FeedbackFragment extends Fragment {
 
 
     /**
-     *
+     * AsyncTask to send feedback to server
      */
     public class SendFeedbackTask extends AsyncTask<String, Void, String> {
 
@@ -198,10 +205,10 @@ public class FeedbackFragment extends Fragment {
     }
 
     /**
-     * @param params
-     * @return
-     * @throws JSONException
-     * @throws UnsupportedEncodingException
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException                thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
      */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();

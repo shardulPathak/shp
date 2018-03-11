@@ -66,7 +66,6 @@ public class MyAppointmentsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +91,6 @@ public class MyAppointmentsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_appointments, container, false);
         mAppointmentsList = new ArrayList<>();
-        mAppointmentsList.add(new Appointment("1", "10/10/10", "10:11", "Mohan"));
         initView(view);
         return view;
     }
@@ -128,7 +126,7 @@ public class MyAppointmentsFragment extends Fragment {
     }
 
     /**
-     *Asynctask to get the appointment status task
+     * Asynctask to get the appointment status task
      */
     public class AppointmentStatusTask extends AsyncTask<String, Void, String> {
         @Override
@@ -226,10 +224,10 @@ public class MyAppointmentsFragment extends Fragment {
     }
 
     /**
-     * @param params
-     * @return
-     * @throws JSONException
-     * @throws UnsupportedEncodingException
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException                thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
      */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
@@ -253,8 +251,9 @@ public class MyAppointmentsFragment extends Fragment {
 
     /**
      * Set patient response fields
-     * @param isAccepted
-     * @param respondedAppointmentID
+     *
+     * @param isAccepted true if the patient has accepted the appointment time and date
+     * @param respondedAppointmentID ID of the appointment the patient has responded to
      */
     public void sendPatientResponse(boolean isAccepted, String respondedAppointmentID) {
         if (isAccepted) {
@@ -275,7 +274,7 @@ public class MyAppointmentsFragment extends Fragment {
 
 
     /**
-     *
+     *AsyncTask to get patient's response for the doctor's response
      */
     public class PatientResponseTask extends AsyncTask<String, Void, String> {
         @Override

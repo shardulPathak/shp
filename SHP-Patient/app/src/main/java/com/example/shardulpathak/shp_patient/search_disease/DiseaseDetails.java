@@ -1,9 +1,8 @@
 package com.example.shardulpathak.shp_patient.search_disease;
 
 /**
- * Created by shardul.pathak on 26-12-2017.
+ * Disease details
  */
-
 public class DiseaseDetails {
 
     private String mDiseaseId;

@@ -98,6 +98,9 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         setRetainInstance(true);
     }
 
+    /**
+     * Add items to the symptom spinner list
+     */
     private void addItemsToList() {
         mSymptomSpinnerList = new ArrayList<>();
         mSelectedSymptomsList = new ArrayList<>();
@@ -119,6 +122,11 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         return view;
     }
 
+    /**
+     * Initializes the view for the fragment
+     *
+     * @param view view to be initialized
+     */
     private void initView(View view) {
 
         mFragmentTitle = (TextView) view.findViewById(R.id.search_disease_tv);
@@ -173,6 +181,11 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         mSelectedSymptomTextView = (TextView) view.findViewById(R.id.selected_symptoms_text_view);
     }
 
+    /**
+     * Opens a particular fragment
+     *
+     * @param fragment fragment to be opened
+     */
     private void openFragment(Fragment fragment) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -180,46 +193,52 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         fragmentTransaction.commit();
     }
 
+    /**
+     * Sends the selected symptoms to the search results fragment
+     */
     private void sendAllSymptomsToResultsFragment() {
         SearchResultsFragment searchResultsFragment = new SearchResultsFragment();
-//        Bundle args = new Bundle();
-//        args.putStringArrayList("symptoms", (ArrayList<String>) mSelectedSymptomsList);
-//        searchResultsFragment.setArguments(args);
+        Bundle args = new Bundle();
+        args.putInt("size",mSelectedSymptomsList.size());
+        args.putStringArrayList("symptoms", (ArrayList<String>) mSelectedSymptomsList);
+        searchResultsFragment.setArguments(args);
         openFragment(searchResultsFragment);
+        mSelectedSymptomTextView.setText("");
     }
 
+    /**
+     * Gets other symptoms using the first symptom value using a asyncTask
+     */
     private void sendAndGetOtherValues() {
         Log.d(TAG, "Inside sendAndGetOtherValues()");
         if (mAuthTask != null) {
             Log.d(TAG, "Inside if, the Async task object is not null. Returning....");
             return;
         }
-
-        String getOtherSymptomsURL = "http://skillab.in/medical_beta/catalog/user/get_symptoms_api";
         Log.d(TAG, "Calling the Async task for fetching other symptoms list");
         mAuthTask = new GetSymptomsTask();
         mAuthTask.execute();
     }
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mSymptomSpinner.setSaveEnabled(true);
-        String currentSpinnerOption = mSelectedSymptom;
-        List<String> selectedSymptoms = mSelectedSymptomsList;
-        outState.putString("spinnerSelection", mSelectedSymptom);
-        outState.putStringArrayList("selectedSymptoms", (ArrayList<String>) mSelectedSymptomsList);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            mSelectedSymptomTextView.setText((CharSequence) savedInstanceState.getStringArrayList("selectedSymptoms"));
-//        savedInstanceState.getString("spinnerSelection");
-        }
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        mSymptomSpinner.setSaveEnabled(true);
+//        String currentSpinnerOption = mSelectedSymptom;
+//        List<String> selectedSymptoms = mSelectedSymptomsList;
+//        outState.putString("spinnerSelection", mSelectedSymptom);
+//        outState.putStringArrayList("selectedSymptoms", (ArrayList<String>) mSelectedSymptomsList);
+//    }
+//
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            mSelectedSymptomTextView.setText((CharSequence) savedInstanceState.getStringArrayList("selectedSymptoms"));
+////        savedInstanceState.getString("spinnerSelection");
+//        }
+//    }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
@@ -230,18 +249,20 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
+    /**
+     * AsyncTask to get the symptoms related to a symptom
+     */
     public class GetSymptomsTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-
             Log.d(TAG, "Inside doInBackground(" + params + ")");
             try {
 
                 String getOtherSymptomsURL = "http://skillab.in/medical_beta/catalog/user/get_symtoms_api";
                 URL url = new URL(getOtherSymptomsURL);
                 JSONObject postDataParams = new JSONObject();
-                postDataParams.put("symtom", "Joint Pain");
+                postDataParams.put("symtom", mFirstSymptom);
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -287,10 +308,8 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
             mAuthTask = null;
 
             Log.d("result::", result);
-
             try {
                 JSONObject getSymptomsResults = new JSONObject(result);
-
                 String status = getSymptomsResults.getString("status");
                 String message = getSymptomsResults.getString("message");
                 if (status.contains("ok")) {
@@ -332,6 +351,9 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
+    /**
+     * Make changes to some views when first symptom is selected
+     */
     private void makeChangesForFirstSymptom() {
         mSelectedSymptomTextView.setVisibility(View.GONE);
 
@@ -345,7 +367,9 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
 
     }
 
-
+    /**
+     * Handles first next button click
+     */
     private void handleFirstNextButtonClick() {
         mSelectedSymptomTextView.setVisibility(View.VISIBLE);
         mSelectedSymptomTextView.append(mFirstSymptom);
@@ -391,6 +415,11 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
+    /**
+     * Adds the symptom to the selected symptoms list
+     *
+     * @param symptom symptom to be added
+     */
     private void addToSelectedSymptoms(String symptom) {
         mSelectedSymptomsList.add(symptom);
         mSelectedSymptomTextView.append(", " + symptom);
@@ -406,6 +435,12 @@ public class SearchDiseaseFragment extends Fragment implements AdapterView.OnIte
 
     }
 
+    /**
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException                thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
+     */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;

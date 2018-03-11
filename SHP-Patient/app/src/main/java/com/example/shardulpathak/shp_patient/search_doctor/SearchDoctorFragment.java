@@ -283,6 +283,7 @@ public class SearchDoctorFragment extends Fragment implements AdapterView.OnItem
                 if (mDoctorDetailsArrayList == null) {
                     mDoctorDetailsArrayList = new ArrayList<>();
                 }
+                mDoctorDetailsArrayList.clear();
                 mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
                         mDocCity, mDocMobile, mDocHospitalName));
                 mDoctorListAdapter.notifyDataSetChanged();

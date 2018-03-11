@@ -66,7 +66,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="25"
-            android:hint="@string/patient_name_hint"
+            android:hint="@string/patient_first_name_hint"
+            android:inputType="textPersonName"
+            android:maxLength="25"
+            android:textSize="15sp" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/last_name_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_view"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp">
+
+        <EditText
+            android:id="@+id/patient_last_name_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="25"
+            android:hint="@string/patient_last_name_hint"
             android:inputType="textPersonName"
             android:maxLength="25"
             android:textSize="15sp" />
@@ -77,7 +98,7 @@
         android:id="@+id/age_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name_view"
+        android:layout_below="@+id/last_name_view"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="20dp">
@@ -114,7 +135,7 @@
             android:ems="25"
             android:hint="@string/patient_address_hint"
             android:inputType="textPostalAddress"
-            android:maxLength="25"
+            android:maxLength="100"
             android:textSize="15sp" />
     </android.support.design.widget.TextInputLayout>
 

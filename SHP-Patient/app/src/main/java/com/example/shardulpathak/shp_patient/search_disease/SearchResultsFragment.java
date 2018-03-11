@@ -1,6 +1,8 @@
 package com.example.shardulpathak.shp_patient.search_disease;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shardulpathak.shp_patient.IFragmentCommunicator;
+import com.example.shardulpathak.shp_patient.PreferencesManagement;
 import com.example.shardulpathak.shp_patient.R;
 
 import org.json.JSONArray;
@@ -30,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -47,6 +51,7 @@ public class SearchResultsFragment extends Fragment {
     private DoctorListAdapter mDoctorListAdapter;
     private ArrayList<DoctorDetails> mDoctorDetailsArrayList;
     ArrayList<String> mSelectedSymptomsList;
+    private int mListSize;
 
 
     String mDiseaseID;
@@ -63,6 +68,11 @@ public class SearchResultsFragment extends Fragment {
     String mDocMobile;
     String mDocHospitalName;
 
+    private String mAppointmentDoctorID;
+    private RequestAppointmentTask mRequestAppointmentTask;
+
+    private PreferencesManagement mPreferencesManagement;
+
     private static final String TAG = SearchResultsFragment.class.getSimpleName();
 
 
@@ -73,8 +83,10 @@ public class SearchResultsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**Set listener
-     * @param listener
+    /**
+     * Set listener
+     *
+     * @param listener IFragmentCommunicator instance to be initialized
      */
     public void setListener(IFragmentCommunicator listener) {
         this.mListener = listener;
@@ -84,6 +96,7 @@ public class SearchResultsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mPreferencesManagement = new PreferencesManagement();
     }
 
     @Override
@@ -91,7 +104,9 @@ public class SearchResultsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
-//        mSelectedSymptomsList = getArguments().getStringArrayList("symptoms");
+        mSelectedSymptomsList = new ArrayList<>();
+        mSelectedSymptomsList = getArguments().getStringArrayList("symptoms");
+        mListSize = getArguments().getInt("size");
         getDiseaseAndDoctorData();
         initView(view);
         getActivity().setTitle(getString(R.string.search_disease_results_activity_title));
@@ -123,15 +138,17 @@ public class SearchResultsFragment extends Fragment {
 
 
     /**
-     * Retuns true if the application should support going back
-     * @return
+     * Returns true if the application should support going back
+     *
+     * @return true if should navigate back , false otherwise
      */
     public boolean shouldGoBack() {
+
         return true;
     }
 
     /**
-     * Asynctask to get disease and doctor details
+     * AsyncTask to get disease and doctor details
      */
     public class GetDiseaseAndDoctorTask extends AsyncTask<String, Void, String> {
 
@@ -140,12 +157,21 @@ public class SearchResultsFragment extends Fragment {
 
             Log.d(TAG, "Inside doInBackground(" + params + ")");
             try {
-
                 String getDiseaseAndDoctorListURL = "http://skillab.in/medical_beta/catalog/user/get_desease_by_all_symtoms_api";
                 URL url = new URL(getDiseaseAndDoctorListURL);
                 JSONObject postDataParams = new JSONObject();
-                postDataParams.put("symtoms", "'Joint Pain','cold'");
-//                postDataParams.put("symtoms", mSelectedSymptomsList);
+                if (mSelectedSymptomsList != null) {
+                    StringBuilder finalString = new StringBuilder("'");
+                    for (int i = 0; i < mSelectedSymptomsList.size(); i++) {
+                        finalString.append(mSelectedSymptomsList.get(i));
+                        if (i < mSelectedSymptomsList.size() - 1) {
+                            finalString.append("','");
+                        } else if (i == mSelectedSymptomsList.size() - 1) {
+                            finalString.append("'");
+                        }
+                    }
+                    postDataParams.put("symtoms", finalString.toString());
+                }
                 Log.e("params", postDataParams.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(15000);
@@ -224,7 +250,7 @@ public class SearchResultsFragment extends Fragment {
                     mDiseaseName = diseaseInfo.getString("disease_name");
                     mDiseaseType = diseaseInfo.getString("type");
 
-                    mDiseaseDetailsArrayList.add(new DiseaseDetails("1", "abcd", "heart"));
+                    mDiseaseDetailsArrayList.add(new DiseaseDetails(mDiseaseID, mDiseaseName, mDiseaseType));
                     mDiseaseListAdapter.notifyDataSetChanged();
 
 
@@ -256,6 +282,7 @@ public class SearchResultsFragment extends Fragment {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                buildErrorDialog(e);
             }
         }
 
@@ -267,10 +294,31 @@ public class SearchResultsFragment extends Fragment {
     }
 
     /**
+     * Builds a dialog to show error or exception
+     *
+     * @param e JSONException instance
+     */
+    private void buildErrorDialog(JSONException e) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setTitle("Error while obtaining disease and doctor results from the server")
+                .setMessage(e.getMessage())
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //do nothing
+                    }
+                });
+
+        AlertDialog logoutDialog = builder.create();
+        logoutDialog.show();
+    }
+
+    /**
      * Get the string for data to be posted to writer
+     *
      * @param params parameters
      * @return string for data to be posted
-     * @throws JSONException thrown when Json data is corrupted
+     * @throws JSONException                thrown when Json data is corrupted
      * @throws UnsupportedEncodingException thrown if the encoding is not supported
      */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
@@ -294,7 +342,8 @@ public class SearchResultsFragment extends Fragment {
     }
 
     /**
-     * Initialize view
+     * Initialize view for the fragment
+     *
      * @param view view to be initialized
      */
     private void initView(View view) {
@@ -311,9 +360,120 @@ public class SearchResultsFragment extends Fragment {
     }
 
     /**
-     *
+     * Sends appointment request to the doctor
      */
-    public void sendAppointmentRequestToDoctor() {
+    public void sendAppointmentRequestToDoctor(String doctorID) {
+        mAppointmentDoctorID = doctorID;
+        if (mRequestAppointmentTask == null) {
+            mRequestAppointmentTask = new RequestAppointmentTask();
+            mRequestAppointmentTask.execute();
+        }
+    }
 
+    /**
+     * AsyncTask to request appointment to the doctor
+     */
+    public class RequestAppointmentTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            Log.d(TAG, "Inside doInBackground(" + Arrays.toString(params) + ")");
+            try {
+                String requestDoctorAppointmentURL = "http://skillab.in/medical_beta/main/make_appoinment_by_patient";
+                URL url = new URL(requestDoctorAppointmentURL);
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("patient_id", mPreferencesManagement.getDataFromPreferences(getActivity(), getString(R.string.pref_user_id_key)));
+                postDataParams.put("doctor_id", mAppointmentDoctorID);
+                postDataParams.put("message_by_patient", "request");
+                Log.e("params", postDataParams.toString());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                Log.d(TAG, "All connection parameters setting done.");
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        Log.d(TAG, line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                } else {
+                    return "false : " + responseCode;
+                }
+            } catch (IOException | JSONException e) {
+                return "Exception ::" + e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, "Inside onPostExecute(" + result + ")");
+            super.onPostExecute(result);
+            mRequestAppointmentTask = null;
+//            Toast.makeText(getActivity(), "result received is :" + result, Toast.LENGTH_LONG).show();
+            Log.d("result::", result);
+
+            try {
+                JSONObject getDoctorDetailsResult = new JSONObject(result);
+                String status = getDoctorDetailsResult.getString("status");
+                String message = getDoctorDetailsResult.getString("message");
+                if (status.contains("success")) {
+                    Log.d("Get Symptoms result: ", status);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                } else {
+                    if (result.isEmpty() || status.contains("error"))
+                        Log.d("Get Symptoms failure : ", status);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                }
+//
+//            JSONArray doctorListArray = getDoctorDetailsResult.getJSONArray("data");
+//            for (int i = 0; i < doctorListArray.length(); i++) {
+//                JSONObject doctorDetails = doctorListArray.getJSONObject(i);
+//                mDoctorID = doctorDetails.getString("user_id");
+//                String docFirstName = doctorDetails.getString("fname");
+//                String docLastName = doctorDetails.getString("lname");
+//                mDocFullName = docFirstName + " " + docLastName;
+//                mDoctorEmail = doctorDetails.getString("email");
+//                mDocHospitalName = doctorDetails.getString("s_name");
+//                mDocCategory = doctorDetails.getString("category");
+//                mDocAddress = doctorDetails.getString("address");
+//                mDocCity = doctorDetails.getString("city");
+//                mDocMobile = doctorDetails.getString("mobile");
+//            }
+//            if (mDoctorDetailsArrayList == null) {
+//                mDoctorDetailsArrayList = new ArrayList<>();
+//            }
+//            mDoctorDetailsArrayList.add(new DoctorDetails(mDoctorID, mDoctorEmail, mDocCategory, mDocFullName, mDocAddress,
+//                    mDocCity, mDocMobile, mDocHospitalName));
+//            mDoctorListAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            mRequestAppointmentTask = null;
+        }
     }
 }
+

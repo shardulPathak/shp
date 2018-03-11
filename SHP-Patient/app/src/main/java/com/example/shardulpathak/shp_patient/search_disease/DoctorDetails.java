@@ -1,9 +1,9 @@
 package com.example.shardulpathak.shp_patient.search_disease;
 
-/**
- * Created by shardul.pathak on 26-12-2017.
- */
 
+/**
+ * Doctor details
+ */
 public class DoctorDetails {
 
 

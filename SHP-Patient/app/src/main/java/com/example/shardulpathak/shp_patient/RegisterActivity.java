@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -20,6 +21,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText mUserIdValueEditText;
     EditText mNameEditText;
+    EditText mLastNameEditText;
     EditText mAgeEditText;
     EditText mAddressEditText;
 
@@ -30,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     String mId;
     String mName;
+    String mLastName;
     String mAge;
     String mAddress;
 
@@ -52,8 +55,10 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mId = mUserIdValueEditText.getText().toString();
                 mName = mNameEditText.getText().toString();
+                mLastName = mLastNameEditText.getText().toString();
                 mAge = mAgeEditText.getText().toString();
                 mAddress = mAddressEditText.getText().toString();
+                Toast.makeText(getApplication(),mAddress,Toast.LENGTH_SHORT).show();
                 mSelectedGenderId = mGenderRadioGroup.getCheckedRadioButtonId();
                 mSelectedRadioButton = (RadioButton) findViewById(mSelectedGenderId);
                 mGender = mSelectedRadioButton.getText().toString();
@@ -67,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         mUserIdValueEditText = (EditText) findViewById(R.id.patient_id_value);
         mNameEditText = (EditText) findViewById(R.id.patient_name_value);
+        mLastNameEditText = (EditText) findViewById(R.id.patient_last_name_value);
         mAgeEditText = (EditText) findViewById(R.id.patient_age_value);
         mAddressEditText = (EditText) findViewById(R.id.patient_address_value);
 
@@ -115,7 +121,21 @@ public class RegisterActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(mAge)||mAge.equals("")) {
+
+        if (TextUtils.isEmpty(mLastName)) {
+            mLastNameEditText.setError("The name field is empty");
+            focusView = mLastNameEditText;
+            cancel = true;
+        }
+
+        if (!isUserNameValid(mLastName)) {
+//            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+            mLastNameEditText.setError("The name is invalid");
+            focusView = mLastNameEditText;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(mAge) || mAge.equals("")) {
             mAgeEditText.setError("The age field is empty");
             focusView = mAgeEditText;
             cancel = true;
@@ -152,11 +172,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isUserAddressValid(String address) {
-        return address.length() <= 25;
+        return address.length() <= 100;
     }
 
     private boolean isUserAgeValid(String age) {
-        if (age.equals("")){
+        if (age.equals("")) {
             mAgeEditText.setError("The age field is empty");
             return false;
         }
@@ -175,6 +195,7 @@ public class RegisterActivity extends AppCompatActivity {
         Intent registerNextIntent = new Intent(this, SecondRegisterActivity.class);
         registerNextIntent.putExtra("userId", mId);
         registerNextIntent.putExtra("userName", mName);
+        registerNextIntent.putExtra("userLastName", mLastName);
         registerNextIntent.putExtra("userAge", mAge);
         registerNextIntent.putExtra("userAddress", mAddress);
         registerNextIntent.putExtra("userGender", mGender);

@@ -80,7 +80,7 @@ public class DetailsFragment extends Fragment {
         getActivity().setTitle(R.string.title_activity_details);
         setRetainInstance(true);
         if (!mAreDetailsSaved) {
-            mPreferencesManagement=new PreferencesManagement();
+            mPreferencesManagement = new PreferencesManagement();
             mGetDetailsTask = new GetDetailsTask();
             mGetDetailsTask.execute();
         } else {
@@ -110,6 +110,11 @@ public class DetailsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initializes the view for the fragment
+     *
+     * @param view view to be initialized
+     */
     private void initView(View view) {
         mNameEditText = (EditText) view.findViewById(R.id.name_value);
         mAddressEditText = (EditText) view.findViewById(R.id.address_value);
@@ -155,6 +160,9 @@ public class DetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Gets the values for user details to after they are updated
+     */
     private void getUpdatedValues() {
         mNameToBeSent = mNameEditText.getText().toString();
         mAddressToBeSent = mAddressEditText.getText().toString();
@@ -162,6 +170,9 @@ public class DetailsFragment extends Fragment {
         mEmailToBeSent = mEmailEditText.getText().toString();
     }
 
+    /**
+     * Sends the updated values to the server using asyncTask
+     */
     private void sendValuesToServer() {
         Log.d(TAG, "Inside sendValuesToServer()");
         if (mEditDetailsTask != null) {
@@ -176,7 +187,7 @@ public class DetailsFragment extends Fragment {
     }
 
     /**
-     *
+     * Save the user details in shared preferences
      */
     private void saveDetailsToPreferences() {
         mPreferencesManagement.putDataInPreferences(getActivity(), getString(R.string.detail_name), mNameEditText.getText().toString());
@@ -187,6 +198,9 @@ public class DetailsFragment extends Fragment {
         mAreDetailsSaved = true;
     }
 
+    /**
+     * Makes some views non-editable
+     */
     private void makeViewNotEditable() {
         mNameEditText.setEnabled(false);
         mAddressEditText.setEnabled(false);
@@ -234,7 +248,9 @@ public class DetailsFragment extends Fragment {
         mListener = null;
     }
 
-
+    /**
+     * AsyncTask to get the user details
+     */
     public class GetDetailsTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -340,7 +356,7 @@ public class DetailsFragment extends Fragment {
 
 
     /**
-     *
+     * AsyncTask to edit the user details
      */
     public class EditDetailsTask extends AsyncTask<String, Void, String> {
 
@@ -435,6 +451,12 @@ public class DetailsFragment extends Fragment {
         }
     }
 
+    /**
+     * @param params parameters
+     * @return string for data to be posted
+     * @throws JSONException                thrown when Json data is corrupted
+     * @throws UnsupportedEncodingException thrown if the encoding is not supported
+     */
     public String getPostDataString(JSONObject params) throws JSONException, UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
